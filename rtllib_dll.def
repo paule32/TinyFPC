@@ -1,0 +1,17 @@
+LIBRARY RTLlib
+EXPORTS
+    SetLength_Array_Boolean
+    SetLength_Array_Char
+    SetLength_Array_Byte
+    SetLength_Array_Word
+    SetLength_Array_DWord
+    SetLength_Array_Integer
+    SetLength_Array_String
+
+    SetLength_String
+    SetLength_String_Ansi
+    SetLength_String_Wide
+    SetLength_String_Unicode
+
+    TRTL_Create
+    TRTL_Destroy
