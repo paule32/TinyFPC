@@ -1,5 +1,26 @@
+; ----------------------------------------------------------------------------
+; File:    RTLlib.DEF
+; Autor:   (c) 2025 by Jens Kallup - paule32
+;
+; License: only for education and testing. Commercial us is not allowed.
+; ----------------------------------------------------------------------------
 LIBRARY RTLlib
 EXPORTS
+    ; -------------------------------
+    ; dynamic Array's
+    ; -------------------------------
+    Array_Helper
+    Array_Boolean
+    Array_Char
+    Array_Byte
+    Array_Word
+    Array_DWord
+    Array_Integer
+    Array_String
+    
+    ; -------------------------------
+    ; SetLength of dynamic Array ...
+    ; -------------------------------
     SetLength_Array_Boolean
     SetLength_Array_Char
     SetLength_Array_Byte
@@ -8,10 +29,16 @@ EXPORTS
     SetLength_Array_Integer
     SetLength_Array_String
 
+    ; -------------------------------
+    ; SetLength of String types ...
+    ; -------------------------------
     SetLength_String
     SetLength_String_Ansi
     SetLength_String_Wide
     SetLength_String_Unicode
 
+    ; -------------------------------
+    ; TRTL class ...
+    ; -------------------------------
     TRTL_Create
     TRTL_Destroy
