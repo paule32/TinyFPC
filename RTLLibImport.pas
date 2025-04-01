@@ -63,8 +63,14 @@ type
     class function Create(NewLength: Integer): TArray<T>; stdcall;
   end;
 
-procedure GetMem(p: Pointer; Size: PtrUInt);          stdcall; overload; external rtllib name 'GetMem_PS';
-function  GetMem(            Size: PtrUInt): Pointer; stdcall; overload; external rtllib name 'GetMem_S';
+procedure GetMem (p: Pointer; Size: PtrUInt);          stdcall; overload; external rtllib name 'GetMem_PS';
+function  GetMem (            Size: PtrUInt): Pointer; stdcall; overload; external rtllib name 'GetMem_S';
+
+procedure FreeMem(p: Pointer; Size: PtrUInt);          stdcall; overload; external rtllib name 'FreeMem_PS';
+function  FreeMem(p: Pointer               ): PtrUInt; stdcall; overload; external rtllib name 'FreeMem_P';
+
+//procedure New(var P: Pointer               ); stdcall; overload; external rtllib name 'New_P';
+//procedure New(var P: Pointer; Size: Integer); stdcall; overload; external rtllib name 'New_PC';
 
 function Abs  (l: Integer): Integer; stdcall; overload; external rtllib name 'Abs_Int';
 function Abs  (l: Int64  ): Int64;   stdcall; overload; external rtllib name 'Abs_Int64';

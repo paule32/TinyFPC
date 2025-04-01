@@ -60,15 +60,18 @@ type
     class function Create(NewLength: Integer): TArray<T>; stdcall;
   end;
 
-procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; overload; export;
-function  GetMem_S (            Size: PtrUInt): Pointer;  stdcall; overload; export;
+procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; export;
+function  GetMem_S (            Size: PtrUInt): Pointer;  stdcall; export;
 
-procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; overload; export;
-function  FreeMem_P (p: Pointer               ): PtrUInt; stdcall; overload; export;
+procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; export;
+function  FreeMem_P (p: Pointer               ): PtrUInt; stdcall; export;
 
-function Abs_Int  (l: Integer): Integer; stdcall; overload; export;
-function Abs_Int64(l: Int64  ): Int64;   stdcall; overload; export;
-function Abs_VR   (l: ValReal): ValReal; stdcall; overload; export;
+//procedure New_P (var P: Pointer               ); stdcall; export;
+//procedure New_PC(var P: Pointer; Size: Integer); stdcall; export;
+
+function Abs_Int  (l: Integer): Integer; stdcall; export;
+function Abs_Int64(l: Int64  ): Int64;   stdcall; export;
+function Abs_VR   (l: ValReal): ValReal; stdcall; export;
 
 function Frac_VR (d: ValReal): ValReal; stdcall; export;
 function Int_VR  (d: ValReal): ValReal; stdcall; export;
@@ -112,17 +115,20 @@ implementation
 procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; [public, alias: 'GetMem_PS'  ]; export; begin           GetMem(p,  Size); end;
 function  GetMem_S (            Size: PtrUInt): Pointer;  stdcall; [public, alias: 'GetMem_S'   ]; export; begin result := GetMem(    Size); end;
 
-procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; [public, alias: 'GreeMem_PS' ]; export; begin           FreeMem(p, Size); end;
+procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; [public, alias: 'FreeMem_PS' ]; export; begin           FreeMem(p, Size); end;
 function  FreeMem_P (p: Pointer               ): PtrUInt; stdcall; [public, alias: 'FreeMem_P'  ]; export; begin result := FreeMem(p      ); end;
 
-function Abs_Int  (l: Integer): Integer; stdcall; [public, alias: 'Abs_Int'  ]; export; begin result := Abs(l); end;
-function Abs_Int64(l: Int64  ): Int64;   stdcall; [public, alias: 'Abs_Int64']; export; begin result := Abs(l); end;
-function Abs_VR   (l: ValReal): ValReal; stdcall; [public, alias: 'Abs_VR'   ]; export; begin result := Abs(l); end;
+//procedure New_P (var P: Pointer               ); stdcall; [public, alias: 'New_P'  ]; export; begin New(P      ); end;
+//procedure New_PC(var P: Pointer; Size: Integer); stdcall; [public, alias: 'New_PC' ]; export; begin New(P, Size); end;
 
-function Frac_VR (d: ValReal): ValReal; stdcall; export; [public, alias: 'Frac_VR'  ]; export; begin result := Frac (d); end;
-function Int_VR  (d: ValReal): ValReal; stdcall; export; [public, alias: 'Int_VR'   ]; export; begin result := Int  (d); end;
-function Round_VR(d: ValReal): ValReal; stdcall; export; [public, alias: 'Round_VR' ]; export; begin result := Round(d); end;
-function Trunc_VR(d: ValReal): ValReal; stdcall; export; [public, alias: 'Trunc_VR' ]; export; begin result := Trunc(d); end;
+function Abs_Int  (l: Integer): Integer; stdcall; [public, alias: 'Abs_Int'  ]; export; begin result := Integer(Abs(Integer(l))); end;
+function Abs_Int64(l: Int64  ): Int64;   stdcall; [public, alias: 'Abs_Int64']; export; begin result := Int64  (Abs(Int64  (l))); end;
+function Abs_VR   (l: ValReal): ValReal; stdcall; [public, alias: 'Abs_VR'   ]; export; begin result := ValReal(Abs(ValReal(l))); end;
+
+function Frac_VR (d: ValReal): ValReal; stdcall; [public, alias: 'Frac_VR'  ]; export; begin result := Frac (d); end;
+function Int_VR  (d: ValReal): ValReal; stdcall; [public, alias: 'Int_VR'   ]; export; begin result := Int  (d); end;
+function Round_VR(d: ValReal): ValReal; stdcall; [public, alias: 'Round_VR' ]; export; begin result := Round(d); end;
+function Trunc_VR(d: ValReal): ValReal; stdcall; [public, alias: 'Trunc_VR' ]; export; begin result := Trunc(d); end;
 
 
 procedure Array_Boolean(NewLength: Integer; var A: T_Array_Boolean); stdcall; [public, alias: 'Array_Boolean']; export;
@@ -359,6 +365,9 @@ exports
   
   FreeMem_PS,
   FreeMem_P,
+  
+  //New_P,
+  //New_PC,
   
   Abs_Int,
   Abs_Int64,

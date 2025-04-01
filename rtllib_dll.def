@@ -57,6 +57,12 @@ EXPORTS
     ; -------------------------------
     GetMem_PS
     GetMem_S
+    
+    FreeMem_PS
+    FreeMem_P
+    
+    ;New_P
+    ;New_PC
 
     ; -------------------------------
     ; Abs
