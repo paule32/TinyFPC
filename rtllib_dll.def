@@ -38,6 +38,39 @@ EXPORTS
     SetLength_String_Unicode
 
     ; -------------------------------
+    ; StringReplace
+    ; -------------------------------
+    StringReplace_String_A
+    StringReplace_Ansi_A
+    StringReplace_Wide_A
+    StringReplace_Unicode_A
+    
+    StringReplace_String_B
+    StringReplace_Ansi_B
+    StringReplace_Wide_B
+    StringReplace_Unicode_B
+    
+    WideStringReplace
+    
+    ; -------------------------------
+    ; memory
+    ; -------------------------------
+    GetMem_PS
+    GetMem_S
+
+    ; -------------------------------
+    ; Abs
+    ; -------------------------------
+    Abs_Int
+    Abs_Int64
+    Abs_VR
+
+    Frac_VR
+    Int_VR
+    Round_VR
+    Trunc_VR
+    
+    ; -------------------------------
     ; TRTL class ...
     ; -------------------------------
     TRTL_Create

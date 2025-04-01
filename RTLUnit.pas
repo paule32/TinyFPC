@@ -1,4 +1,5 @@
 {$mode delphi}
+{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 {$M-}
 unit RTLUnit;
 
@@ -12,7 +13,7 @@ type
     constructor Create;
     destructor Destroy; override;
   end;
-  
+
 type
   TRtl = class(TObject)
   private
@@ -59,6 +60,21 @@ type
     class function Create(NewLength: Integer): TArray<T>; stdcall;
   end;
 
+procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; overload; export;
+function  GetMem_S (            Size: PtrUInt): Pointer;  stdcall; overload; export;
+
+procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; overload; export;
+function  FreeMem_P (p: Pointer               ): PtrUInt; stdcall; overload; export;
+
+function Abs_Int  (l: Integer): Integer; stdcall; overload; export;
+function Abs_Int64(l: Int64  ): Int64;   stdcall; overload; export;
+function Abs_VR   (l: ValReal): ValReal; stdcall; overload; export;
+
+function Frac_VR (d: ValReal): ValReal; stdcall; export;
+function Int_VR  (d: ValReal): ValReal; stdcall; export;
+function Round_VR(d: ValReal): ValReal; stdcall; export;
+function Trunc_VR(d: ValReal): ValReal; stdcall; export;
+
 procedure Array_Boolean (NewLength: Integer; var A: T_Array_Boolean); stdcall; export;
 procedure Array_Char    (NewLength: Integer; var A: T_Array_Char   ); stdcall; export;
 procedure Array_Byte    (NewLength: Integer; var A: T_Array_Byte   ); stdcall; export;
@@ -80,7 +96,34 @@ procedure SetLength_String_Ansi    (var S: AnsiString;    NewLength: Integer); s
 procedure SetLength_String_Wide    (var S: WideString;    NewLength: Integer); stdcall; export;
 procedure SetLength_String_Unicode (var S: UnicodeString; NewLength: Integer); stdcall; export;
 
+function StringReplace_String_A  (const S: String;        const oldPattern: String;        const newPattern: String;        Flags: TReplaceFlags; aCount: Integer): String;        stdcall export;
+function StringReplace_Ansi_A    (const S: AnsiString;    const oldPattern: AnsiString;    const newPattern: AnsiString;    Flags: TReplaceFlags; aCount: Integer): AnsiString;    stdcall export;
+function StringReplace_Wide_A    (const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags; aCount: Integer): WideString;    stdcall export;
+function StringReplace_Unicode_A (const S: UnicodeString; const oldPattern: UnicodeString; const newPattern: UnicodeString; Flags: TReplaceFlags; aCount: Integer): UnicodeString; stdcall export;
+
+function StringReplace_String_B  (const S:        String; const oldPattern:        String; const newPattern:        String; Flags: TReplaceFlags):        String; stdcall export;
+function StringReplace_Ansi_B    (const S:    AnsiString; const oldPattern:    AnsiString; const newPattern:    AnsiString; Flags: TReplaceFlags):    AnsiString; stdcall export;
+function StringReplace_Wide_B    (const S:    WideString; const oldPattern:    WideString; const newPattern:    WideString; Flags: TReplaceFlags):    WideString; stdcall export;
+function StringReplace_Unicode_B (const S: UnicodeString; const oldPattern: UnicodeString; const newPattern: UnicodeString; Flags: TReplaceFlags): UnicodeString; stdcall export;
+function WideStringReplace       (const S:    WideString; const oldPattern:    WideString; const newPattern:    WideString; Flags: TReplaceFlags):    WideString; stdcall; export;
+
 implementation
+
+procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; [public, alias: 'GetMem_PS'  ]; export; begin           GetMem(p,  Size); end;
+function  GetMem_S (            Size: PtrUInt): Pointer;  stdcall; [public, alias: 'GetMem_S'   ]; export; begin result := GetMem(    Size); end;
+
+procedure FreeMem_PS(p: Pointer; Size: PtrUInt);          stdcall; [public, alias: 'GreeMem_PS' ]; export; begin           FreeMem(p, Size); end;
+function  FreeMem_P (p: Pointer               ): PtrUInt; stdcall; [public, alias: 'FreeMem_P'  ]; export; begin result := FreeMem(p      ); end;
+
+function Abs_Int  (l: Integer): Integer; stdcall; [public, alias: 'Abs_Int'  ]; export; begin result := Abs(l); end;
+function Abs_Int64(l: Int64  ): Int64;   stdcall; [public, alias: 'Abs_Int64']; export; begin result := Abs(l); end;
+function Abs_VR   (l: ValReal): ValReal; stdcall; [public, alias: 'Abs_VR'   ]; export; begin result := Abs(l); end;
+
+function Frac_VR (d: ValReal): ValReal; stdcall; export; [public, alias: 'Frac_VR'  ]; export; begin result := Frac (d); end;
+function Int_VR  (d: ValReal): ValReal; stdcall; export; [public, alias: 'Int_VR'   ]; export; begin result := Int  (d); end;
+function Round_VR(d: ValReal): ValReal; stdcall; export; [public, alias: 'Round_VR' ]; export; begin result := Round(d); end;
+function Trunc_VR(d: ValReal): ValReal; stdcall; export; [public, alias: 'Trunc_VR' ]; export; begin result := Trunc(d); end;
+
 
 procedure Array_Boolean(NewLength: Integer; var A: T_Array_Boolean); stdcall; [public, alias: 'Array_Boolean']; export;
 var
@@ -157,6 +200,17 @@ procedure SetLength_String         (var S: String;        NewLength: Integer); s
 procedure SetLength_String_Ansi    (var S: AnsiString;    NewLength: Integer); stdcall; [public, alias: 'SetLength_String_Ansi'     ]; export; begin SetLength(S, NewLength); end;
 procedure SetLength_String_Wide    (var S: WideString;    NewLength: Integer); stdcall; [public, alias: 'SetLength_String_Wide'     ]; export; begin SetLength(S, NewLength); end;
 procedure SetLength_String_Unicode (var S: UnicodeString; NewLength: Integer); stdcall; [public, alias: 'SetLength_String_Unicode'  ]; export; begin SetLength(S, NewLength); end;
+
+function StringReplace_String_A  (const S: String;        const oldPattern: String;        const newPattern: String;        Flags: TReplaceFlags; aCount: Integer): String;        stdcall export; [public, alias: 'StringReplace_String_A'  ]; begin result :=     String   (StringReplace(    String   (S),        String(oldPattern),        String(newPattern), Flags, aCount)); end;
+function StringReplace_Ansi_A    (const S: AnsiString;    const oldPattern: AnsiString;    const newPattern: AnsiString;    Flags: TReplaceFlags; aCount: Integer): AnsiString;    stdcall export; [public, alias: 'StringReplace_Ansi_A'    ]; begin result := AnsiString   (StringReplace(AnsiString   (S),    AnsiString(oldPattern),    AnsiString(newPattern), Flags, aCount)); end;
+function StringReplace_Wide_A    (const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags; aCount: Integer): WideString;    stdcall export; [public, alias: 'StringReplace_Wide_A'    ]; begin result := WideString   (StringReplace(WideString   (S),    WideString(oldPattern),    WideString(newPattern), Flags, aCount)); end;
+function StringReplace_Unicode_A (const S: UnicodeString; const oldPattern: UnicodeString; const newPattern: UnicodeString; Flags: TReplaceFlags; aCount: Integer): UnicodeString; stdcall export; [public, alias: 'StringReplace_Unicode_A' ]; begin result := UnicodeString(StringReplace(UnicodeString(S), UnicodeString(oldPattern), UnicodeString(newPattern), Flags, aCount)); end;
+
+function StringReplace_String_B  (const S: String;        const oldPattern: String;        const newPattern: String;        Flags: TReplaceFlags): String;        stdcall; export; [public, alias: 'StringReplace_String_B'  ]; begin result :=     String   (StringReplace (    String   (S),     String   (oldPattern),     String   (newPattern), Flags)); end;
+function StringReplace_Ansi_B    (const S: AnsiString;    const oldPattern: AnsiString;    const newPattern: AnsiString;    Flags: TReplaceFlags): AnsiString;    stdcall; export; [public, alias: 'StringReplace_Ansi_B'    ]; begin result := AnsiString   (StringReplace (AnsiString   (S), AnsiString   (oldPattern), AnsiString   (newPattern), Flags)); end;
+function StringReplace_Wide_B    (const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags): WideString;    stdcall; export; [public, alias: 'StringReplace_Wide_B'    ]; begin result := WideString   (StringReplace (WideString   (S), WideString   (oldPattern), WideString   (newPattern), Flags)); end;
+function StringReplace_Unicode_B (const S: UnicodeString; const oldPattern: UnicodeString; const newPattern: UnicodeString; Flags: TReplaceFlags): UnicodeString; stdcall; export; [public, alias: 'StringReplace_Unicode_B' ]; begin result := UnicodeString(StringReplace (UnicodeString(S), UnicodeString(oldPattern), UnicodeString(newPattern), Flags)); end;
+function WideStringReplace       (const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags): WideString;    stdcall; export; [public, alias: 'WideStringReplace'       ]; begin result := WideString(WideStringReplace(WideString   (S), WideString   (oldPattern), WideString   (newPattern), Flags)); end;
 
 class function TBooleanArray<T>.Create(NewLength: Integer): TArray<T>;
 var
@@ -287,7 +341,34 @@ exports
   SetLength_String_Ansi,
   SetLength_String_Wide,
   SetLength_String_Unicode,
+  
+  StringReplace_String_A,
+  StringReplace_Ansi_A,
+  StringReplace_Wide_A,
+  StringReplace_Unicode_A,
+  
+  StringReplace_String_B,
+  StringReplace_Ansi_B,
+  StringReplace_Wide_B,
+  StringReplace_Unicode_B,
 
+  WideStringReplace,
+  
+  GetMem_PS,
+  GetMem_S,
+  
+  FreeMem_PS,
+  FreeMem_P,
+  
+  Abs_Int,
+  Abs_Int64,
+  Abs_VR,
+  
+  Frac_VR,
+  Int_VR,
+  Round_VR,
+  Trunc_VR,
+  
   TRTL_Create,
   TRTL_Destroy;
 
