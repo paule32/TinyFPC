@@ -61,8 +61,45 @@ EXPORTS
     FreeMem_PS
     FreeMem_P
     
-    ;New_P
-    ;New_PC
+    ; New_P
+    ; New_PC
+    
+    ; -------------------------------
+    ; FillChar
+    ; -------------------------------
+    ; FillBool_A
+    ; FillBool_B
+    ; FillBool_C
+    ; FillBool_D
+    ; FillBool_E
+    ;
+    FillChar_A
+    FillChar_B
+    FillChar_C
+    FillChar_D
+    FillChar_E
+    ;
+    FillByte_A
+    FillByte_B
+    FillByte_C
+    FillByte_D
+    FillByte_E
+    ;
+    FillWord_A
+    FillWord_B
+    FillWord_C
+    FillWord_D
+    FillWord_E
+    ;
+    FillDWird_A
+    FillDWird_B
+    FillDWord_C
+    FillDWord_D
+    FillDWird_E
+    
+    FillWord_Word
+    
+    FPC_move
 
     ; -------------------------------
     ; Abs
@@ -75,6 +112,11 @@ EXPORTS
     Int_VR
     Round_VR
     Trunc_VR
+    
+    ; -------------------------------
+    ; Error / Exceptions
+    ; -------------------------------
+    AbstractError_E
     
     ; -------------------------------
     ; TRTL class ...

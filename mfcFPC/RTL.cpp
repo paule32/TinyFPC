@@ -18,18 +18,32 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+# include "pch.h"
+# include "fpcDLL.h"
 
-{$mode delphi}
-program test;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-uses RtlLibImport;
+// \brief StringReplace
+char *
+StringReplace(
+	char* origin,
+	char* oldPattern,
+	char* newPattern,
+	uint32_t flags)
+{
+	using std::string;
+	using std::regex;
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+	string input = origin;
+	string replaceWith = newPattern;
+	regex pattern(oldPattern);
+
+	string result = regex_replace(input, pattern, replaceWith);
+	return (char*)result.c_str();
+}
+
+#ifdef __cplusplus
+};
+#endif

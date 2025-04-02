@@ -18,18 +18,38 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+#pragma once
 
-{$mode delphi}
-program test;
+#ifndef FPCDLL_H_
+# define FPCDLL_H_
 
-uses RtlLibImport;
+// Export-Makro definieren
+#ifdef FPCDLL_EXPORTS
+# define FPCDLL_API __declspec(dllexport)
+#else
+# define FPCDLL_API __declspec(dllimport)
+#endif
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// \brief Flags for StringReplace function.
+// \detail TReplaceFlags determines the behaviour of the \ref StringReplace function.
+enum TReplaceFlags {
+	rfReplaceAll = 1 << 0,	//! Replace all occurences of the search string witht the replacement string
+	rfIgnoreCase = 1 << 1	//! Search case insensive
+};
+
+char*
+StringReplace(
+	char* origin,
+	char* oldPattern,
+	char* newPattern,
+	uint32_t flags);
+
+#ifdef __cplusplus
+};
+#endif
+
+#endif  // FPCDLL_H_

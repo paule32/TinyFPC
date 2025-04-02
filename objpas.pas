@@ -19,17 +19,13 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
 
-{$mode delphi}
-program test;
+unit objpas;
+                  
+{$mode ObjFPC}{$H+}
 
-uses RtlLibImport;
-
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
+interface
+ 
+implementation
+ 
 end.
+ 

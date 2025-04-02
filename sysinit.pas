@@ -19,17 +19,17 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
 
-{$mode delphi}
-program test;
+unit sysinit;
 
-uses RtlLibImport;
+// this unit is required for x64, it wasnt for x86 alone
+                  
+{$mode ObjFPC}{$H+}
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
+interface
+
+uses sysinitpas;
+ 
+implementation
+ 
 end.
+ 

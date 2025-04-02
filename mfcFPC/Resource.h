@@ -19,17 +19,20 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
 
-{$mode delphi}
-program test;
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Verwendet von mfcFPC.rc
+//
+#define IDP_SOCKETS_INIT_FAILED			101
 
-uses RtlLibImport;
+// Nächste Standardwerte für neue Objekte
+//
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+#define _APS_NEXT_RESOURCE_VALUE	1000
+#define _APS_NEXT_CONTROL_VALUE		1000
+#define _APS_NEXT_SYMED_VALUE		1000
+#define _APS_NEXT_COMMAND_VALUE		32771
+#endif
+#endif

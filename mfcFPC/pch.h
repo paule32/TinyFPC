@@ -18,18 +18,14 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+#ifndef PCH_H
+#define PCH_H
 
-{$mode delphi}
-program test;
+// Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
+#include "framework.h"
 
-uses RtlLibImport;
+# include <iostream>
+# include <string>
+# include <regex>
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+#endif //PCH_H

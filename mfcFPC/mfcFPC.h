@@ -18,18 +18,27 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+#pragma once
 
-{$mode delphi}
-program test;
+#ifndef __AFXWIN_H__
+	#error "'pch.h' vor dieser Datei für PCH einschließen"
+#endif
 
-uses RtlLibImport;
+#include "resource.h"		// Hauptsymbole
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+
+// CmfcFPCApp
+// Informationen zur Implementierung dieser Klasse finden Sie unter mfcFPC.cpp.
+//
+
+class CmfcFPCApp : public CWinApp
+{
+public:
+	CmfcFPCApp();
+
+// Überschreibungen
+public:
+	virtual BOOL InitInstance();
+
+	DECLARE_MESSAGE_MAP()
+};

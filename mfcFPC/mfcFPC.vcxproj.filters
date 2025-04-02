@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien\RTL">
+      <UniqueIdentifier>{99239806-7266-4a6d-b913-29d664e04079}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\RTL">
+      <UniqueIdentifier>{604f928d-45d9-4b74-993d-14c42cb02ee9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headerdateien\studio">
+      <UniqueIdentifier>{7f5528a9-856d-4c7e-b0ad-bfc91ecab81a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\studio">
+      <UniqueIdentifier>{17d8b0f9-3960-43e0-b47a-0789d2cc6f63}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="RTL.cpp">
+      <Filter>Quelldateien\RTL</Filter>
+    </ClCompile>
+    <ClCompile Include="mfcFPC.cpp">
+      <Filter>Quelldateien\studio</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Quelldateien\studio</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\mfcFPC.rc2">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="mfcFPC.def">
+      <Filter>Quelldateien\RTL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="fpcDLL.h">
+      <Filter>Headerdateien\RTL</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>Headerdateien\studio</Filter>
+    </ClInclude>
+    <ClInclude Include="mfcFPC.h">
+      <Filter>Headerdateien\studio</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Headerdateien\studio</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Headerdateien\studio</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Headerdateien\studio</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mfcFPC.rc">
+      <Filter>Ressourcendateien</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

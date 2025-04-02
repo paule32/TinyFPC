@@ -19,17 +19,8 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
 
-{$mode delphi}
-program test;
+// pch.cpp: Quelldatei, die dem vorkompilierten Header entspricht
 
-uses RtlLibImport;
+#include "pch.h"
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+// Bei der Verwendung vorkompilierter Header ist diese Quelldatei für eine erfolgreiche Kompilierung erforderlich.

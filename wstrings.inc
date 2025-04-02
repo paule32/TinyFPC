@@ -19,17 +19,15 @@
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
 
-{$mode delphi}
-program test;
+{$if defined(codeh) and defined(codei)}
+{$FATAL interface and implementation at the same time not possible}
+{$endif}
 
-uses RtlLibImport;
+{$ifdef codeh}
 
-var
-  rtl: TRtl;
-  s: String;
-begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
-  rtl := TRTL.Create;
-  rtl.Free;
-end.
+{$endif}
+
+{$ifdef codei}
+
+{$endif}
+
