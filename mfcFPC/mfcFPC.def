@@ -19,9 +19,6 @@
 ; OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ; ---------------------------------------------------------------------------------------
 
-; mfcFPC.def: Deklariert die Modulparameter für die DLL.
-
-LIBRARY
-
+LIBRARY mfcfpc
 EXPORTS
-
+	fpc_ReplaceText

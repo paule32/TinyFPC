@@ -28,8 +28,9 @@ var
   rtl: TRtl;
   s: String;
 begin
-  s := '_------_';
-  s := StringReplace(s, '--', '/', [rfReplaceAll]);
+  s := StringReplace('_------_', '--', '/', [rfReplaceAll]);
+  MessageBoxA(0, LPCSTR(s), PChar('cxxxx'), 0);
+  
   rtl := TRTL.Create;
   rtl.Free;
 end.

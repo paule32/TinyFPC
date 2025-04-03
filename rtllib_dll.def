@@ -40,26 +40,26 @@ EXPORTS
     ; -------------------------------
     ; StringReplace
     ; -------------------------------
-    StringReplace_String_A
-    StringReplace_Ansi_A
-    StringReplace_Wide_A
-    StringReplace_Unicode_A
+    StringReplace_A
+    ;StringReplace_Ansi_A
+    ;StringReplace_Wide_A
+    ;StringReplace_Unicode_A
     
-    StringReplace_String_B
-    StringReplace_Ansi_B
-    StringReplace_Wide_B
-    StringReplace_Unicode_B
+    ;StringReplace_String_B
+    ;StringReplace_Ansi_B
+    ;StringReplace_Wide_B
+    ;StringReplace_Unicode_B
     
-    WideStringReplace
+    ;WideStringReplace
     
     ; -------------------------------
     ; memory
     ; -------------------------------
-    GetMem_PS
-    GetMem_S
+    ;GetMem_PS
+    ;GetMem_S
     
-    FreeMem_PS
-    FreeMem_P
+    ;FreeMem_PS
+    ;FreeMem_P
     
     ; New_P
     ; New_PC
@@ -73,50 +73,50 @@ EXPORTS
     ; FillBool_D
     ; FillBool_E
     ;
-    FillChar_A
-    FillChar_B
-    FillChar_C
-    FillChar_D
-    FillChar_E
+    ;FillChar_A
+    ;FillChar_B
+    ;FillChar_C
+    ;FillChar_D
+    ;FillChar_E
     ;
-    FillByte_A
-    FillByte_B
-    FillByte_C
-    FillByte_D
-    FillByte_E
+    ;FillByte_A
+    ;FillByte_B
+    ;FillByte_C
+    ;FillByte_D
+    ;FillByte_E
     ;
-    FillWord_A
-    FillWord_B
-    FillWord_C
-    FillWord_D
-    FillWord_E
+    ;FillWord_A
+    ;FillWord_B
+    ;FillWord_C
+    ;FillWord_D
+    ;FillWord_E
     ;
-    FillDWird_A
-    FillDWird_B
-    FillDWord_C
-    FillDWord_D
-    FillDWird_E
+    ;FillDWird_A
+    ;FillDWird_B
+    ;FillDWord_C
+    ;FillDWord_D
+    ;FillDWird_E
     
-    FillWord_Word
+    ;FillWord_Word
     
     FPC_move
 
     ; -------------------------------
     ; Abs
     ; -------------------------------
-    Abs_Int
-    Abs_Int64
-    Abs_VR
+    ;Abs_Int
+    ;Abs_Int64
+    ;Abs_VR
 
-    Frac_VR
-    Int_VR
-    Round_VR
-    Trunc_VR
+    ;Frac_VR
+    ;Int_VR
+    ;Round_VR
+    ;Trunc_VR
     
     ; -------------------------------
     ; Error / Exceptions
     ; -------------------------------
-    AbstractError_E
+    ;AbstractError_E
     
     ; -------------------------------
     ; TRTL class ...

@@ -41,12 +41,22 @@ enum TReplaceFlags {
 	rfIgnoreCase = 1 << 1	//! Search case insensive
 };
 
-char*
+FPCDLL_API LPCSTR __cdecl
+fpc_ReplaceText(
+	LPCSTR  S,
+	LPCSTR  oldPattern,
+	LPCSTR  newPattern,
+	DWORD32 flags,
+	DWORD32 lenS,
+	DWORD32 lenOldPattern,
+	DWORD32 lenNewPattern);
+
+FPCDLL_API LPCSTR __cdecl
 StringReplace(
-	char* origin,
-	char* oldPattern,
-	char* newPattern,
-	uint32_t flags);
+	LPCSTR  origin,
+	LPCSTR  oldPattern,
+	LPCSTR  newPattern,
+	DWORD32 flags);
 
 #ifdef __cplusplus
 };

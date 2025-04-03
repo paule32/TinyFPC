@@ -18,30 +18,88 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+
 # include "pch.h"
+
+# define FPCDLL_EXPORTS
 # include "fpcDLL.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// ---------------------------------------------------------------------------------------
+// internal helper members ...
+// ---------------------------------------------------------------------------------------
+std::vector<std::string> global_str;
+
+std::string __cdecl
+replaceSubstring(
+	const std::string str,
+	const std::string& oldPattern,
+	const std::string& newPattern) {
+
+	std::string result = str;
+	size_t index = 0;
+
+	while ((index = result.find(oldPattern, index)) != std::string::npos) {
+		result.replace(index, oldPattern.length(), newPattern);
+		index += newPattern.length();
+	}
+	return result;
+}
+
+// ---------------------------------------------------------------------------------------
+// internal section
+// ---------------------------------------------------------------------------------------
+FPCDLL_API LPCSTR __cdecl
+fpc_ReplaceText(
+	LPCSTR  S,
+	LPCSTR  oldPattern,
+	LPCSTR  newPattern,
+	DWORD32 flags,
+	DWORD32 lenS,
+	DWORD32 lenOldPattern,
+	DWORD32 lenNewPattern) {
+
+	std::string safe_S  (S, lenS);             // sichere Kopie mit Länge
+	std::string safe_Old(oldPattern, lenOldPattern);
+	std::string safe_New(newPattern, lenNewPattern);
+
+	// Ersetzen
+	global_str.push_back(replaceSubstring(safe_S, safe_Old, safe_New));
+	std::string result = global_str.back();
+	global_str.pop_back();
+	//MessageBoxA(0, LPCSTR(result.c_str()), LPCSTR("---- 00 ---"), 0);
+	return LPCSTR(result.c_str());
+}
+
+// ---------------------------------------------------------------------------------------
+// global section
+// ---------------------------------------------------------------------------------------
+
 // \brief StringReplace
-char *
+FPCDLL_API LPCSTR __cdecl
 StringReplace(
-	char* origin,
-	char* oldPattern,
-	char* newPattern,
-	uint32_t flags)
+	LPCSTR  origin,
+	LPCSTR  oldPattern,
+	LPCSTR  newPattern,
+	DWORD32 flags)
 {
 	using std::string;
 	using std::regex;
 
 	string input = origin;
-	string replaceWith = newPattern;
-	regex pattern(oldPattern);
+	auto  buffer = new char[input.length() + 1];
+	if (buffer) {
+		strcpy_s(buffer, input.length() + 1, input.c_str());
+		MessageBoxA(0, buffer, input.c_str(), 0);
+	}	else {
+		MessageBoxA(0, "error ufo", "error mufo", 0);
+		throw string("StringReplace: could not allocate memory.");
+	}
 
-	string result = regex_replace(input, pattern, replaceWith);
-	return (char*)result.c_str();
+	return (char*)buffer;
 }
 
 #ifdef __cplusplus

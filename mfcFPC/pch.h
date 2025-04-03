@@ -22,10 +22,19 @@
 #define PCH_H
 
 // Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
-#include "framework.h"
+# include "framework.h"
+
+# include <string.h>     // for strcpy_s, strcat_s
+# include <stdlib.h>     // for _countof
+# include <stdio.h>      // for printf
+# include <errno.h>      // for return values
 
 # include <iostream>
 # include <string>
 # include <regex>
+# include <vector>
+
+#include <cstring>    // Für strdup
+#include <cstdlib>    // Für malloc, free
 
 #endif //PCH_H

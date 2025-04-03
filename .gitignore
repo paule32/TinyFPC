@@ -30,3 +30,4 @@ mfcFPC/x64/Release/mfcFPC.dll
 mfcFPC/x64/Release/mfcFPC.exp
 mfcFPC/x64/Release/mfcFPC.lib
 *.a
+mfcFPC.dll
