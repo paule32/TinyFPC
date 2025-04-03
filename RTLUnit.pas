@@ -334,6 +334,8 @@ function StringReplace_A(
 var
     flag: Cardinal;
     len1, len2, len3: Integer;
+    temp: PAnsiChar;
+    news: String;
 begin
     if rfReplaceAll in Flags then flag := flag or (1 shl 0);
     if rfIgnoreCase in Flags then flag := flag or (1 shl 1);
@@ -342,7 +344,7 @@ begin
     len2 := StrLen(PAnsiChar(oldPattern));
     len3 := StrLen(PAnsiChar(newPattern));
     
-    result := ReplaceText(
+    temp := ReplaceText(
         PAnsiChar(S),
         PAnsiChar(oldPattern),
         PAnsiChar(newPattern),
@@ -351,6 +353,16 @@ begin
         len2,
         len3
     );
+    
+    MessageBoxA(0, temp, 'abcd', 0);
+    
+    news := PAnsiChar(GetMem(StrLen(temp)+1));
+    if sizeof(news) < 9 then
+    MessageBoxA(0,'ttttt','ccc',0);
+    move(temp, news, sizeof(news));
+    news[StrLen(temp)] := #0;
+    
+    result := news;
 end;
 
 (*

@@ -28,7 +28,7 @@ var
   rtl: TRtl;
   s: String;
 begin
-  s := StringReplace('_------_', '--', '/', [rfReplaceAll]);
+  s := StringReplace('hallo welt', 'hallo', 'dudu', [rfReplaceAll]);
   MessageBoxA(0, LPCSTR(s), PChar('cxxxx'), 0);
   
   rtl := TRTL.Create;

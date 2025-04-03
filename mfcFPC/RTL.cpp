@@ -32,6 +32,7 @@ extern "C" {
 // internal helper members ...
 // ---------------------------------------------------------------------------------------
 std::vector<std::string> global_str;
+std::string result_str;
 
 std::string __cdecl
 replaceSubstring(
@@ -68,10 +69,10 @@ fpc_ReplaceText(
 
 	// Ersetzen
 	global_str.push_back(replaceSubstring(safe_S, safe_Old, safe_New));
-	std::string result = global_str.back();
+	result_str = global_str.back();
 	global_str.pop_back();
-	//MessageBoxA(0, LPCSTR(result.c_str()), LPCSTR("---- 00 ---"), 0);
-	return LPCSTR(result.c_str());
+	MessageBoxA(0, LPCSTR(result_str.c_str()), LPCSTR("---- 00 ---"), 0);
+	return LPCSTR(result_str.c_str());
 }
 
 // ---------------------------------------------------------------------------------------
