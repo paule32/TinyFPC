@@ -55,34 +55,32 @@
 //		Details.
 //
 
-// CmfcFPCApp
+# include "fpcDLL.h"
+// CmfcFPCrtl
 
-BEGIN_MESSAGE_MAP(CmfcFPCApp, CWinApp)
+BEGIN_MESSAGE_MAP(CmfcFPCrtl, CWinApp)
 END_MESSAGE_MAP()
 
 
-// CmfcFPCApp-Erstellung
+// CmfcFPCrtl-Erstellung
 
-CmfcFPCApp::CmfcFPCApp()
+CmfcFPCrtl::CmfcFPCrtl()
 {
 	// TODO: Hier Code zur Konstruktion einfügen
 	// Alle wichtigen Initialisierungen in InitInstance positionieren
 }
 
 
-// Das einzige CmfcFPCApp-Objekt
+// Das einzige CmfcFPCrtl-Objekt
 
-CmfcFPCApp theApp;
-
+CmfcFPCrtl theRtl;
 
 // CmfcFPCApp-Initialisierung
-
-BOOL CmfcFPCApp::InitInstance()
+BOOL CmfcFPCrtl::InitInstance()
 {
 	CWinApp::InitInstance();
 
-	if (!AfxSocketInit())
-	{
+	if (!AfxSocketInit()) {
 		AfxMessageBox(IDP_SOCKETS_INIT_FAILED);
 		return FALSE;
 	}

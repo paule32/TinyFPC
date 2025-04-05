@@ -31,3 +31,16 @@ mfcFPC/x64/Release/mfcFPC.exp
 mfcFPC/x64/Release/mfcFPC.lib
 *.a
 mfcFPC.dll
+/doc/dox
+*.dll
+mfcFPC/mfcFPC/x64/Release/mfcFPC.vcxproj.FileListAbsolute.txt
+mfcFPC/mfcFPC/x64/Release/mfcFPC.vcxproj.Up2Date
+mfcFPC/mfcFPC/x64/Release/mfcFPC.vcxproj.FileListAbsolute.txt
+doc/doc/mfcFPC.cpp
+doc/doc/mfcFPC.h
+doc/doc/RTL.cpp
+doc/doc/fpcDLL.h
+doc/devdoc.chw
+doc/devdoc.chm
+doc/packed.zip
+doc/warnings.log

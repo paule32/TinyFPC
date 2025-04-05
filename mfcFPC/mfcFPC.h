@@ -31,14 +31,18 @@
 // Informationen zur Implementierung dieser Klasse finden Sie unter mfcFPC.cpp.
 //
 
-class CmfcFPCApp : public CWinApp
+class CmfcFPCrtl : public CWinApp
 {
 public:
-	CmfcFPCApp();
+	CmfcFPCrtl();
 
 // Überschreibungen
 public:
 	virtual BOOL InitInstance();
 
+	std::string result_string;
+
 	DECLARE_MESSAGE_MAP()
 };
+
+extern CmfcFPCrtl theRtl;

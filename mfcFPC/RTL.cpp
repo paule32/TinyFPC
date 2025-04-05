@@ -31,15 +31,14 @@ extern "C" {
 // ---------------------------------------------------------------------------------------
 // internal helper members ...
 // ---------------------------------------------------------------------------------------
-std::vector<std::string> global_str;
-std::string result_str;
+std::string result_string;
 
 std::string __cdecl
 replaceSubstring(
 	const std::string str,
 	const std::string& oldPattern,
-	const std::string& newPattern) {
-
+	const std::string& newPattern)
+{
 	std::string result = str;
 	size_t index = 0;
 
@@ -55,6 +54,7 @@ replaceSubstring(
 // ---------------------------------------------------------------------------------------
 FPCDLL_API LPCSTR __cdecl
 fpc_ReplaceText(
+	LPVOID  P,
 	LPCSTR  S,
 	LPCSTR  oldPattern,
 	LPCSTR  newPattern,
@@ -67,12 +67,18 @@ fpc_ReplaceText(
 	std::string safe_Old(oldPattern, lenOldPattern);
 	std::string safe_New(newPattern, lenNewPattern);
 
+	CmfcFPCrtl *rtl = static_cast<CmfcFPCrtl*>(P);
+	if (nullptr == rtl) {
+		MessageBox()
+	}
 	// Ersetzen
-	global_str.push_back(replaceSubstring(safe_S, safe_Old, safe_New));
-	result_str = global_str.back();
-	global_str.pop_back();
-	MessageBoxA(0, LPCSTR(result_str.c_str()), LPCSTR("---- 00 ---"), 0);
-	return LPCSTR(result_str.c_str());
+	result_string = replaceSubstring(
+		safe_S,
+		safe_Old,
+		safe_New
+	);
+	MessageBoxA(0, LPCSTR(result_string.c_str()), LPCSTR("---- 00 ---"), 0);
+	return LPCSTR(result_string.c_str());
 }
 
 // ---------------------------------------------------------------------------------------

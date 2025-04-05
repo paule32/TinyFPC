@@ -31,10 +31,9 @@
 
 # include <iostream>
 # include <string>
+# include <cstring>    // Für strdup
+# include <cstdlib>    // Für malloc, free
 # include <regex>
 # include <vector>
-
-#include <cstring>    // Für strdup
-#include <cstdlib>    // Für malloc, free
 
 #endif //PCH_H
