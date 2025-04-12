@@ -44,3 +44,10 @@ doc/devdoc.chw
 doc/devdoc.chm
 doc/packed.zip
 doc/warnings.log
+/build
+*.exe
+doc/doc/1
+doc/MFC_TCP_Client_IP.zip
+*.bak
+LICENSE.bak
+/mfcFPC/xml

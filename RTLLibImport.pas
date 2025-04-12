@@ -28,7 +28,7 @@ unit RTLLibImport;
 
 interface
 
-uses Windows;
+uses Windows, global;
 
 const rtllib = 'rtllib.dll';
 

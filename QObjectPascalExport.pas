@@ -18,23 +18,31 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
-#ifndef PCH_H
-#define PCH_H
+{$mode delphi}
+unit QObjectPascalExport;
 
-// Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
-# include "framework.h"
+interface
 
-# include <string.h>     // for strcpy_s, strcat_s
-# include <stdlib.h>     // for _countof
-# include <stdio.h>      // for printf
-# include <errno.h>      // for return values
+type
+  (**!
+   * Eine dddddd
+   * \class QObject
+   * \brief eine akkk clk
+   *)
+  QObject = class
+  public
+    constructor Create;
+    destructor Destroy;
+  end;
+  
+implementation
 
-# include <iostream>
-# include <string>
-# include <sstream>
-# include <cstring>    // Für strdup
-# include <cstdlib>    // Für malloc, free
-# include <regex>
-# include <vector>
+constructor QObject.Create;
+begin
+end;
 
-#endif //PCH_H
+destructor QObject.Destroy;
+begin
+end;
+
+end.

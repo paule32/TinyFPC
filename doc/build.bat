@@ -26,6 +26,13 @@
 echo Compile help documentation. This can take awhile...
 
 :: -----------------------------------------------------------------
+:: convert pascal documentation comments to c comment styles ...
+:: -----------------------------------------------------------------
+cd ..
+pas2comment.exe .
+cd doc
+
+:: -----------------------------------------------------------------
 :: first, delete old doxgen + filter.py output content ...
 :: -----------------------------------------------------------------
 echo =[ remove old data files...      ]=   10 %%
@@ -73,7 +80,7 @@ echo =[ copy script data files...     ]=   60 %%
 copy .\dox\html\*.js  .\dox\chm >nul 2>nul
 copy .\dox\html\*.md5 .\dox\chm >nul 2>nul
 
-copy .\doc\dot\img\*.png .\dox\chm
+copy .\doc\img\*.png .\dox\chm
 :: -----------------------------------------------------------------
 :: fourth step, create the compiled .chm file ...
 :: -----------------------------------------------------------------

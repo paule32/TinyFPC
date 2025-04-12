@@ -60,7 +60,9 @@ type
 
   // -- basic types
   Integer     = LongInt;
+  Int32       = Integer;
   DWord       = LongWord;
+  DWORD32     = Int32;
   {$ifdef CPU64}
   NativeInt   = Int64;
   NativeUInt  = QWord;

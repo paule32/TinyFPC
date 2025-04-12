@@ -18,23 +18,43 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
-#ifndef PCH_H
-#define PCH_H
+{$mode delphi}
+unit global;
+interface
+uses Windows;
 
-// Fügen Sie hier Header hinzu, die vorkompiliert werden sollen.
-# include "framework.h"
+// todo: versioning !
+{$ifdef FPC}
+const RTLLib_Version = 20250510;
+{$endif}
 
-# include <string.h>     // for strcpy_s, strcat_s
-# include <stdlib.h>     // for _countof
-# include <stdio.h>      // for printf
-# include <errno.h>      // for return values
+type
+  PDLLerror = ^TDLLerror;
+  TDLLerror = record
+    ErrorCode               : DWORD32;
+    ErrorTextLength         : DWORD32;
+    ErrorFromFunctionLength : DWORD32;
+    ErrorFromLine           : DWORD32;
+    ErrorText               : LPCSTR;
+    ErrorTimeStamp          : Array [0..31] of Char;
+    ErrorFromFunction       : LPCSTR;
+  end;
 
-# include <iostream>
-# include <string>
-# include <sstream>
-# include <cstring>    // Für strdup
-# include <cstdlib>    // Für malloc, free
-# include <regex>
-# include <vector>
+type
+  PDLLargs = ^TDLLargs;
+  TDLLargs = record
+    ArgsCount  : DWORD32;
+    ArgsString : String;
+  end;
+  
+type
+  PDLLrequest = ^TDLLrequest;
+  TDLLrequest = record
+    version : DWORD32;
+    Error   : TDLLerror;
+    Args    : TDLLargs;
+  end;
 
-#endif //PCH_H
+implementation
+
+end.

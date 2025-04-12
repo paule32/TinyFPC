@@ -18,13 +18,13 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
+#pragma once
 /**
  * \file fpcDLL.h
  * \brief This File is the prototyp File for the miniFPC/RTL Project.
  * 
  * \autor \a_currentAuthors
  */
-#pragma once
 
 #ifndef FPCDLL_H_
 # define FPCDLL_H_
@@ -51,15 +51,84 @@ extern "C" {
  * This structure is used for the Exchange of Error Codes, Messages, and Debug
  * Informations from C++ to FPC, and FPC to C++.
  * \endcond
+ * \cond   german
+ * \brief  Die folgende Struktur dient dem Austausch von Fehler und Fehler-Codes
+ *         von C++ nach FPC.
+ * 
+ * Diese Struktur wird verwendet, um den Austausch von Fehler-Codes Informationen
+ * von C++ nach FPC, und FPC nach C++ zu handhaben.
+ * \endcond
  */
 struct TDLLerror {
-	uint32_t ErrorCode;                 ///< \cond english The Error Code of current Error   \endcond
-	uint32_t ErrorTextLength;           ///< \cond english The Length for ErrorText          \endcond
-	uint32_t ErrorFromFunctionLength;   ///< \cond english The Length for the Function Name  \endcond
-	uint32_t ErrorFromLine;             ///< \cond english The Line of Error occurency       \endcond
-	char*    ErrorText;                 ///< \cond english The Error Text                    \endcond
-	char*    ErrorTimeStamp[32];        ///< \cond english A Time stamp for the Error        \endcond
-	char*    ErrorFromFunction;         ///< \cond english This is the Function name in which the Error occur \endcond
+	/**
+	 * \cond english
+	 * \brief The Error Code of current Error.
+	 * \endcond
+	 * \cond german
+	 * \brief Der aktuelle Fehler-Code.
+	 * \endcond
+     */
+	DWORD32 ErrorCode;
+
+	/**
+	 * \cond english
+	 * \brief The Length for ErrorText
+	 * \endcond
+	 * \cond german
+	 * \brief Die Länge für den Fehler-Code.
+	 * \endcond
+	 */
+	DWORD32 ErrorTextLength;
+
+	/**
+	 * \cond english
+	 * \brief The Length for the Function Name.
+	 * \endcond
+	 * \cond german
+	 * \brief Die Länge für den Funktion-Namen.
+	 * \endcond
+	 */
+	DWORD32 ErrorFromFunctionLength;
+
+	/**
+	 * \cond english
+	 * \brief The Line of Error occurency.
+	 * \endcond
+	 * \cond german
+	 * \brief Die Zeile den Fehlers
+	 * \endcond
+	 */
+	DWORD32 ErrorFromLine;
+
+	/**
+	 * \cond english
+	 * \brief The Line of Error occurency.
+	 * \endcond
+	 * \cond german
+	 * \brief Der zugeordnete Fehler-Text.
+	 * \endcond
+	 */
+	LPCSTR  ErrorText;
+
+	/**
+	 * \cond english
+	 * \brief The Line of Error occurency.
+	 * \endcond
+	 * \cond german
+	 * \brief Der Zeit-Stempel für den Fehler.
+	 * \endcond
+	 */
+	LPCSTR  ErrorTimeStamp[32];
+
+	/**
+	 * \cond english
+	 * \brief This is the Function name in which the Error occur
+	 * \endcond
+	 * \cond german
+	 * \brief Dies ist der Funktion (Name) in welch der Fehler ausgelöst wurde.
+	 * \endcond
+	 */
+	LPCSTR  ErrorFromFunction;
 };
 
 /**
@@ -71,10 +140,33 @@ struct TDLLerror {
  * This structure is used for Exchange Function Arguments from FPC to C++,
  * and C++ to FPC.
  * \endcond
+ * \cond   german
+ * \brief  Die folgende Struktur dient zum austauschen von Argumenten von FPC und C++
+ * 
+ * Diese Struktur wird verwendet, um den Austausch von Funktion-Arguemten von FPC nach C++
+ * und C++ nach FPC zu bewerkstelligen.
+ * \endcond
  */
 struct TDLLargs {
-	uint32_t ArgsCount;                 ///< \cond english This field holds the numbers of Arguments        \endcond
-	char*    ArgsString;				///< \cond english This field represents the mangled Argument Names \endcond
+	/**
+	 * \cond english
+ 	 * \brief This field holds the numbers of Arguments
+	 * \endcond
+	 * \cond german
+	 * \brief Dieses Feld bestimmt die Anzahl der übergebenen Argumente
+	 * \endcond
+	 */
+	DWORD32 ArgsCount;
+
+	/**
+	 * \cond english
+	 * \brief This field represents the mangled Argument Names
+	 * \endcond
+	 * \cond german
+	 * \brief Dieses Feld entspricht den Argumenten-Typ
+	 * \endcond
+	 */
+	LPCSTR  ArgsString;
 };
 
 /**
@@ -85,8 +177,9 @@ struct TDLLargs {
  * \endcond
  */
 struct TDLLrequest {
-	struct TDLLerror Error;
-	struct TDLLargs  Args;
+	DWORD32 version;
+	struct  TDLLerror Error;
+	struct  TDLLargs  Args;
 };
 extern std::string result_string;
 
@@ -102,9 +195,8 @@ enum TReplaceFlags {
 	rfIgnoreCase = 1 << 1	///< \cond english Search case insensive \endcond
 };
 
-FPCDLL_API LPCSTR __cdecl
-fpc_ReplaceText(
-	LPVOID  Request,
+FPCDLL_API TDLLrequest * __cdecl fpc_ReplaceText(TDLLrequest * P);
+#if 0
 	LPCSTR  S,
 	LPCSTR  oldPattern,
 	LPCSTR  newPattern,
@@ -112,6 +204,7 @@ fpc_ReplaceText(
 	DWORD32 lenS,
 	DWORD32 lenOldPattern,
 	DWORD32 lenNewPattern);
+#endif
 
 FPCDLL_API LPCSTR __cdecl
 StringReplace(

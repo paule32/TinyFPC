@@ -24,16 +24,12 @@
 # define FPCDLL_EXPORTS
 # include "fpcDLL.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 // ---------------------------------------------------------------------------------------
 // internal helper members ...
 // ---------------------------------------------------------------------------------------
 std::string result_string;
 
-std::string __cdecl
+static std::string __cdecl
 replaceSubstring(
 	const std::string str,
 	const std::string& oldPattern,
@@ -52,33 +48,24 @@ replaceSubstring(
 // ---------------------------------------------------------------------------------------
 // internal section
 // ---------------------------------------------------------------------------------------
-FPCDLL_API LPCSTR __cdecl
+extern "C" FPCDLL_API TDLLrequest* __cdecl
 fpc_ReplaceText(
-	LPVOID  P,
-	LPCSTR  S,
-	LPCSTR  oldPattern,
-	LPCSTR  newPattern,
-	DWORD32 flags,
-	DWORD32 lenS,
-	DWORD32 lenOldPattern,
-	DWORD32 lenNewPattern) {
+	TDLLrequest * P) {
 
-	std::string safe_S  (S, lenS);             // sichere Kopie mit Länge
-	std::string safe_Old(oldPattern, lenOldPattern);
-	std::string safe_New(newPattern, lenNewPattern);
-
-	CmfcFPCrtl *rtl = static_cast<CmfcFPCrtl*>(P);
-	if (nullptr == rtl) {
-		MessageBox()
+	MessageBoxA(0, "1111111", "errrrr", 0);
+	if (nullptr == P) {
+		MessageBoxA(0, "erro", "errrrr", 0);
 	}
-	// Ersetzen
-	result_string = replaceSubstring(
-		safe_S,
-		safe_Old,
-		safe_New
-	);
-	MessageBoxA(0, LPCSTR(result_string.c_str()), LPCSTR("---- 00 ---"), 0);
-	return LPCSTR(result_string.c_str());
+	MessageBoxA(0, "222222", "errrrr", 0);
+	if (P->version == 231) {
+		MessageBoxA(0, "231", "ok", 0);
+		if (P->Error.ErrorCode == 114422) {
+			MessageBoxA(0, "ggHHHHHCDSGDFG", "22121212", 0);
+		}
+		P->Error.ErrorCode = 427;
+	}
+	MessageBoxA(0, "333333", "errrrr", 0);
+	return P;
 }
 
 // ---------------------------------------------------------------------------------------
@@ -108,7 +95,3 @@ StringReplace(
 
 	return (char*)buffer;
 }
-
-#ifdef __cplusplus
-};
-#endif

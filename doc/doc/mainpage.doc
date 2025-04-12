@@ -1,29 +1,35 @@
 /**
- * @file:   mainpage.doc
- * @author: (c) 2025 Jens Kallup - \a_currentAuthors
+ * \file    mainpage.doc
+ * \author  (c) 2025 Jens Kallup - \a_currentAuthors
  *          All rights reserved
  *
+ * \mainpage miniFPC RTL
  * \cond english
- * \brief only for education, and non-profit usage !
+ *
+ * Welcome on the landing page for the miniFPC/RTL Project !
+ * This Documentation contains Informations for the Application/Library.
+ *
+ * \note only for education, and non-profit usage !
  * \endcond
  *
  * \cond german
- * \brief nur für Bildungszwecke, und non-profit Nutzung !
+ *
+ * \note nur für Bildungszwecke, und non-profit Nutzung !
  * \endcond
- */
-
-/**
+ *
  * \cond german
- * @mainpage miniFPC/RTL
  *
  * Herzlich Willkommen auf der Hauptseite des miniFPC/RTL Projektes !
  * Diese Dokumentation enthält Informationen zur Anwendung/Bibliothek.
  * \endcond
  *
- * \cond english
- * @mainpage miniFPC/RTL
- *
- * Welcome on the landing page for the miniFPC/RTL Project !
- * This Documentation contains Informations for the Application/Library.
- * \endcond
+ * \tableofcontents
+ * Leading text.
+ * \section sec An example section
+ * This page contains the subsections \ref subsection1 and \ref subsection2.
+ * For more info see page \ref page2.
+ * \subsection subsection1 The first subsection
+ * Text.
+ * \subsection subsection2 The second subsection
+ * sssss
  */

@@ -35,6 +35,12 @@ unit system;
 
 interface
 
+const rtllib  = 'rtllib.dll';
+
+type
+  TByteLookup = array[0..255] of Byte;
+  PByteLookup = ^TByteLookup;
+  
 const
   CP_ACP     = 0;     // default to ANSI code page
   CP_OEMCP   = 1;     // default to OEM (console) code page
@@ -213,6 +219,8 @@ var
   is_console: boolean = false; public name 'operatingsystem_isconsole';
   IsMultithread: boolean = false;
 
+Procedure fpc_Copy_proc (Src, Dest, TypeInfo : Pointer); compilerproc; inline;
+
 implementation
 
 uses xmm;
@@ -291,6 +299,21 @@ end;
 // for internal use
 procedure fpc_initializeunits; [external name 'FPC_INITIALIZEUNITS'];
 
+
+{ define alias for internal use in the system unit }
+Function fpc_Copy_internal (Src, Dest, TypeInfo : Pointer) : SizeInt;[external name 'FPC_COPY'];
+
+Function fpc_Copy (Src, Dest, TypeInfo : Pointer) : SizeInt;[Public,alias : 'FPC_COPY']; compilerproc;
+begin
+  result:=sizeof(pointer);
+end;
+
+procedure fpc_Copy_proc (Src, Dest, TypeInfo : Pointer);compilerproc; inline;
+begin
+  fpc_copy_internal(src,dest,typeinfo);
+end;
+
+
 // internal use only
 procedure fpc_finalizeunits; [public, alias: 'FPC_FINALIZEUNITS'];
 var
@@ -349,19 +372,13 @@ end;
 
 // MOVE THESE!!!!!!!!!!!!
 
+function GetBsr8Bit: PByteLookup; cdecl; external rtllib;
 function BsrByte(Const AValue: Byte): Byte;
-const bsr8bit: array [Byte] of Byte = (
-  $ff,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
-	5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
-	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
-	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
-	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
-);
+var
+  bsr: PByteLookup;
 begin
-  result:=bsr8bit[AValue];
+  bsr := GetBsr8Bit;
+  result := bsr^[AValue];
 end;
 
 function BsrDWord(Const AValue : DWord): cardinal;

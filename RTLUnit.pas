@@ -26,7 +26,24 @@ unit RTLUnit;
 
 interface
 
-uses Windows;
+uses Windows, global;
+
+type
+  TByteLookup = array[0..255] of Byte;
+  PByteLookup = ^TByteLookup;
+const
+  bsr8bit: TByteLookup = (
+  $ff,0,1,1,2,2,2,2,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+	5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,
+	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,
+	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,
+	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
+);
+
+function GetBsr8bit: PByteLookup; stdcall; export;
 
 type
   TReplaceFlag  = (
@@ -171,7 +188,7 @@ function StringReplace_A(
     S: AnsiString;
     oldPattern: AnsiString;
     newPattern: AnsiString;
-    Flags: TReplaceFlags ): AnsiString; stdcall export;
+    Flags: TReplaceFlags ): PDLLrequest; stdcall export;
 
 (*) 
 function StringReplace_Wide_B    (const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags): WideString;    stdcall export;
@@ -184,6 +201,12 @@ function WideStringReplace       (const S:    WideString; const oldPattern:    W
 implementation
 
 const mfcfpc = 'mfcfpc.dll';
+
+function GetBsr8bit: PByteLookup; stdcall; export;
+begin
+  result := @bsr8bit;
+end;
+
 
 (*
 procedure GetMem_PS(p: Pointer; Size: PtrUInt);           stdcall; [public, alias: 'GetMem_PS'  ]; export; begin           GetMem(p,  Size); end;
@@ -314,21 +337,25 @@ procedure SetLength_String_Wide    (var S: WideString;    NewLength: Integer); s
 procedure SetLength_String_Unicode (var S: UnicodeString; NewLength: Integer); stdcall; [public, alias: 'SetLength_String_Unicode'  ]; export; begin SetLength(S, NewLength); end;
 
 
-function ReplaceText(
-    S: PAnsiChar;
+
+function ReplaceText(P: PDLLrequest): PDLLrequest; cdecl; external mfcfpc name 'fpc_ReplaceText';
+
+//function ReplaceText(P: TDLLrequest): PAnsiChar; cdecl; external mfcfpc name 'fpc_ReplaceText';
+(*)
+ S: PAnsiChar;
     oldPattern: PAnsiChar;
     newPattern: PAnsiChar;
     Flags: Cardinal;
     lenS: Integer;
     lenOldPattern: Integer;
     lenNewPattern: Integer): PAnsiChar; cdecl;
-    external mfcfpc name 'fpc_ReplaceText';
+    external mfcfpc name 'fpc_ReplaceText';*)
 
 function StringReplace_A(
     S: AnsiString;
     oldPattern: AnsiString;
     newPattern: AnsiString;
-    Flags: TReplaceFlags ): AnsiString; stdcall;
+    Flags: TReplaceFlags ): PDLLrequest; stdcall;
     [public, alias: 'StringReplace_A' ];
     export;
 var
@@ -336,6 +363,7 @@ var
     len1, len2, len3: Integer;
     temp: PAnsiChar;
     news: String;
+    P: PDLLrequest;
 begin
     if rfReplaceAll in Flags then flag := flag or (1 shl 0);
     if rfIgnoreCase in Flags then flag := flag or (1 shl 1);
@@ -344,6 +372,20 @@ begin
     len2 := StrLen(PAnsiChar(oldPattern));
     len3 := StrLen(PAnsiChar(newPattern));
     
+    MessageBoxA(0,'xx  aaaaa xx','ee 000 eeee',0);
+    
+    GetMem(P, sizeof(P));
+    
+    P.version := RTLLib_Version;
+    P.Error.ErrorCode := 0;
+    
+    P := ReplaceText(P);
+    
+    if P.Error.ErrorCode = 426 then
+    MessageBoxA(0,'lllluuuulll','000000',0);
+    
+    FreeMem(P);
+    (*
     temp := ReplaceText(
         PAnsiChar(S),
         PAnsiChar(oldPattern),
@@ -352,17 +394,17 @@ begin
         len1,
         len2,
         len3
-    );
+    );*)
     
-    MessageBoxA(0, temp, 'abcd', 0);
+    MessageBoxA(0, 'temp', 'abcd', 0);
     
-    news := PAnsiChar(GetMem(StrLen(temp)+1));
+(*)    news := PAnsiChar(GetMem(StrLen(temp)+1));
     if sizeof(news) < 9 then
     MessageBoxA(0,'ttttt','ccc',0);
     move(temp, news, sizeof(news));
-    news[StrLen(temp)] := #0;
+    news[StrLen(temp)] := #0;*)
     
-    result := news;
+    result := @P;
 end;
 
 (*
@@ -488,6 +530,8 @@ end;
 //procedure AbstractError_E; stdcall;  [public, alias: 'AbstractError_E']; export; begin AbstractError; end;
 
 exports
+  GetBsr8bit name 'GetBsr8bit',
+  
   Array_Boolean,
   Array_Char,
   Array_Byte,
