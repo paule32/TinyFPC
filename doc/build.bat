@@ -28,9 +28,9 @@ echo Compile help documentation. This can take awhile...
 :: -----------------------------------------------------------------
 :: convert pascal documentation comments to c comment styles ...
 :: -----------------------------------------------------------------
-cd ..
-pas2comment.exe .
-cd doc
+::cd ..
+::pas2comment.exe .
+::cd doc
 
 :: -----------------------------------------------------------------
 :: first, delete old doxgen + filter.py output content ...
@@ -105,6 +105,9 @@ goto eof
 :error_doxygen
 echo doxygen translation failed.
 :eof
+::cd ,,
+::c2pascomment.exe .
+::cd doc
 :: -----------------------------------------------------------------
 :: E O F  -  End Of File.
 :: -----------------------------------------------------------------

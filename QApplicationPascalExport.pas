@@ -25,35 +25,47 @@ interface
 uses QObjectPascalExport;
 
 type
-  (**!
-   * \class  QApplication
-   * \brief  hallo QBBVVV
-   * \detail QApplication specializes QGuiApplication with some functionality needed for
-   *         QWidget-based applications. It handles widget specific initialization, and
-   *         finalization.
+  (**
+   * \class   QApplication
+   * \brief   The QApplication class manages the GUI application's control flow and main settings.
+   * \details QApplication specializes QGuiApplication with some functionality needed for
+   *          QWidget-based applications. It handles widget specific initialization, and
+   *          finalization.
    *
-   *         For any GUI application using Qt, there is precisely one QApplication object,
-   *         no matter whether the application has 0, 1, 2 or more windows at any given
-   *         time.
-   *         For non-QWidget based Qt applications, use QGuiApplication instead, as it does
-   *         not depend on the QtWidgets library.
+   *          For any GUI application using Qt, there is precisely one QApplication object,
+   *          no matter whether the application has 0, 1, 2 or more windows at any given
+   *          time.
+   *          For non-QWidget based Qt applications, use QGuiApplication instead, as it does
+   *          not depend on the QtWidgets library.
    *
-   *         Some GUI applications provide a special batch mode ie. provide command line
-   *         arguments for executing tasks without manual intervention. In such non-GUI mode,
-   *         it is often sufficient to instantiate a plain QCoreApplication to avoid unnecessarily
-   *         initializing resources needed for a graphical user interface.
+   *          Some GUI applications provide a special batch mode ie. provide command line
+   *          arguments for executing tasks without manual intervention. In such non-GUI mode,
+   *          it is often sufficient to instantiate a plain QCoreApplication to avoid unnecessarily
+   *          initializing resources needed for a graphical user interface.
    *
-   *         The following example shows how to dynamically create an appropriate type of
-   *         application instance:
+   *          The following example shows how to dynamically create an appropriate type of
+   *          application instance:
    *)
   QApplication = class(QObject)
   public
+    (**
+     * \brief This is the Pascal constructor for class QApplication.
+     *)
     constructor Create(ArgCount: Integer; Args: Array of String);
+    
+    (**
+     * \brief This ist the Pascal destructor for class QApplication.
+     *)
     destructor Destroy;
   end;
   
 implementation
 
+(**
+ * \brief CTOR Create of QApplication
+ * \param ArgCount - Integer
+ * \param Args     - Array of String
+ *)
 constructor QApplication Create(
   ArgCount: Integer;
   Args: Array of String);

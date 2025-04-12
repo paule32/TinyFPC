@@ -90,7 +90,7 @@ function  GetMem (            Size: PtrUInt): Pointer; stdcall; overload; extern
 
 procedure FreeMem(p: Pointer; Size: PtrUInt);          stdcall; overload; external rtllib name 'FreeMem_PS';
 function  FreeMem(p: Pointer               ): PtrUInt; stdcall; overload; external rtllib name 'FreeMem_P';
-*)
+*/
 //procedure New(var P: Pointer               ); stdcall; overload; external rtllib name 'New_P';
 //procedure New(var P: Pointer; Size: Integer); stdcall; overload; external rtllib name 'New_PC';
 (*
@@ -123,10 +123,10 @@ procedure FillDWord (var x; count: SizeInt; Value: Byte   ); stdcall; overload; 
 procedure FillDWord (var x; count: SizeInt; Value: Char   ); stdcall; overload; external rtllib name 'FillDWord_C';
 procedure FillDWord (var x; count: SizeInt; Value: Word   ); stdcall; overload; external rtllib name 'FillDWord_D';
 procedure FillDWord (var x; count: SizeInt; Value: DWord  ); stdcall; overload; external rtllib name 'FillDWord_E';
-*)
+*/
 //procedure move(const source; var dest; count: SizeInt); stdcall; external rtllib name 'FPC_move';
 
-(*)
+(*/
 function Abs  (l: Integer): Integer; stdcall; overload; external rtllib name 'Abs_Int';
 function Abs  (l: Int64  ): Int64;   stdcall; overload; external rtllib name 'Abs_Int64';
 function Abs  (l: ValReal): ValReal; stdcall; overload; external rtllib name 'Abs_VR';
@@ -135,7 +135,7 @@ function Frac (d: ValReal): ValReal; stdcall; external rtllib name 'Frac_VR';
 function Int  (d: ValReal): ValReal; stdcall; external rtllib name 'Int_VR';
 function Round(d: ValReal): ValReal; stdcall; external rtllib name 'Round_VR';
 function Trunc(d: ValReal): ValReal; stdcall; external rtllib name 'Trunc_VR';
-*)
+*/
 
 procedure SetLength(var A: TArray<Boolean>; NewLength: Integer); stdcall; overload; external rtllib name 'SetLength_Array_Boolean';
 procedure SetLength(var A: TArray<Char   >; NewLength: Integer); stdcall; overload; external rtllib name 'SetLength_Array_Char';
@@ -171,7 +171,7 @@ function StringReplace(const S: UnicodeString; const oldPattern: UnicodeString; 
 function StringReplace(const S: AnsiString;    const oldPattern: AnsiString;    const newPattern: AnsiString;    Flags: TReplaceFlags): AnsiString;    stdcall; overload; external rtllib name 'StringReplace_Ansi_B';
 function StringReplace(const S: WideString;    const oldPattern: WideString;    const newPattern: WideString;    Flags: TReplaceFlags): WideString;    stdcall; overload; external rtllib name 'StringReplace_Wide_B';
 function StringReplace(const S: UnicodeString; const oldPattern: UnicodeString; const newPattern: UnicodeString; Flags: TReplaceFlags): UnicodeString; stdcall; overload; external rtllib name 'StringReplace_Unicode_B';
-*)
+*/
 
 //function WideStringReplace(S: WideString; const oldPattern: WideString; const newPattern: WideString; Flags: TReplaceFlags): WideString; stdcall; external rtllib name 'WideStringReplace';
 
