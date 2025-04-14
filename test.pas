@@ -20,6 +20,7 @@
 // ---------------------------------------------------------------------------------------
 
 {$mode delphi}
+{$define RELEASE}
 program test;
 
 uses RtlLibImport;

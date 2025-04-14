@@ -148,7 +148,7 @@ procedure SetLength(var A: TArray<String >; NewLength: Integer); stdcall; overlo
 procedure SetLength(var S: AnsiString;    NewLength: Integer); stdcall; overload; external rtllib name 'SetLength_String_Ansi';
 procedure SetLength(var S: WideString;    NewLength: Integer); stdcall; overload; external rtllib name 'SetLength_String_Wide';
 procedure SetLength(var S: UnicodeString; NewLength: Integer); stdcall; overload; external rtllib name 'SetLength_String_Unicode';
-
+*)
 procedure Array_Boolean (NewLength: Integer; var A: T_Array_Boolean); stdcall; external rtllib name 'Array_Boolean';
 procedure Array_Char    (NewLength: Integer; var A: T_Array_Char   ); stdcall; external rtllib name 'Array_Char';
 procedure Array_Byte    (NewLength: Integer; var A: T_Array_Byte   ); stdcall; external rtllib name 'Array_Byte';
@@ -174,7 +174,7 @@ function StringReplace(const S: UnicodeString; const oldPattern: UnicodeString; 
 */
 
 //function WideStringReplace(S: WideString; const oldPattern: WideString; const newPattern: WideString; Flags: TReplaceFlags): WideString; stdcall; external rtllib name 'WideStringReplace';
-
+*)
 procedure AbstractError; stdcall; external rtllib name 'AbstractError_E';
 
 implementation

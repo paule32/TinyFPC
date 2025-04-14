@@ -62,6 +62,7 @@ type
 implementation
 
 (**
+ * \
  * \brief CTOR Create of QApplication
  * \param ArgCount - Integer
  * \param Args     - Array of String
@@ -81,9 +82,10 @@ end;
 function  QApplication_Create: Pointer;
 var
   P : Pointer;
+  I : Integer;
   A : Array of String;
 begin
-  SetLength(A, 2);
+  SetLength(A, ParamCount);
   P := QApplication.Create(ParamCount, A);
   resuklt := P;
 end;

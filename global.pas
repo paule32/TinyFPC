@@ -41,16 +41,24 @@ type
   end;
 
 type
+  PDLLarguments = ^TDLLarguments;
+  TDLLarguments = record
+    ArgTypeName      : Array [0..64] of Char;
+    ArgContentLength : DWORD32;
+    ArgContent       : LPCSTR;
+  end;
+  
+type
   PDLLargs = ^TDLLargs;
   TDLLargs = record
-    ArgsCount  : DWORD32;
-    ArgsString : String;
+    ArgsCount : DWORD32;
+    ArgsArray : Array of TDLLArguments;
   end;
   
 type
   PDLLrequest = ^TDLLrequest;
   TDLLrequest = record
-    version : DWORD32;
+    Version : DWORD32;
     Error   : TDLLerror;
     Args    : TDLLargs;
   end;
