@@ -22,6 +22,7 @@
 unit QObjectPascalExport;
 
 interface
+uses SysUtils;
 
 type
   (**
@@ -60,6 +61,10 @@ begin
 end;
 
 destructor QObject.Destroy;
+begin
+end;
+
+procedure QObject.test;
 begin
 end;
 

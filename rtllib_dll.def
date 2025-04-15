@@ -27,6 +27,18 @@ EXPORTS
     xmminit
 
     ; -------------------------------
+    ; String conversation ...
+    ; -------------------------------
+    IntToStr
+    UIntToStr
+    
+    ; -------------------------------
+    ; QApplication
+    ; -------------------------------
+    QApplication_Create
+    QApplication_Destroy
+    
+    ; -------------------------------
     ; dynamic Array's
     ; -------------------------------
     Array_Helper

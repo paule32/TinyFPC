@@ -26,7 +26,7 @@ unit RTLUnit;
 
 interface
 
-uses Windows, global;
+uses Windows, global, QApplicationPascalExport;
 
 type
   TByteLookup = array[0..255] of Byte;
@@ -79,9 +79,6 @@ type
   T_Array_DWord   = Array of DWord;
   T_Array_Integer = Array of Integer;
   T_Array_String  = Array of String;
-
-type
-  TArray<T> = Array of T;
 
 function StringReplace_A(
     S: AnsiString;
@@ -195,9 +192,14 @@ end;
 //procedure AbstractError_E; stdcall;  [public, alias: 'AbstractError_E']; export; begin AbstractError; end;
 
 exports
-  GetBsr8bit name 'GetBsr8bit',
+  GetBsr8bit            name 'GetBsr8bit',
+  CommandLineToArgvA    name 'CommandLineToArgvA',
+  
   StringReplace_A,
   
+  QApplication_Create   name 'QApplication_Create',
+  QApplication_Destroy  name 'QApplication_Destroy',
+
   TRTL_Create,
   TRTL_Destroy;
 

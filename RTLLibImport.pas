@@ -28,7 +28,7 @@ unit RTLLibImport;
 
 interface
 
-uses Windows, global;
+uses Windows, global, QApplicationPascalImport;
 
 const rtllib = 'rtllib.dll';
 

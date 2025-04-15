@@ -28,6 +28,20 @@ uses Windows;
 const RTLLib_Version = 20250510;
 {$endif}
 
+const
+  KERNEL32 = 'kenrel32.dll';
+  RTLDLL   = 'rtllib.dll';
+
+{$ifdef RELEASE}
+function CommandLineToArgvA(CmdLine: PAnsiChar; var argc: Integer): PPAnsiChar; stdcall; external RTLDLL;
+{$endif}
+
+type
+  TArray<T> = Array of T;
+
+var
+  QApplication_Counter: DWORD32;
+
 type
   PDLLerror = ^TDLLerror;
   TDLLerror = record

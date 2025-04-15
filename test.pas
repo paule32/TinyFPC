@@ -23,15 +23,18 @@
 {$define RELEASE}
 program test;
 
-uses RtlLibImport;
+uses RtlLibImport, QApplicationPascalImport;
 
 var
   rtl: TRtl;
   s: String;
+  app: QApplication;
 begin
+  app := QApplication.Create;
   s := StringReplace('hallo welt', 'hallo', 'dudu', [rfReplaceAll]);
   MessageBoxA(0, LPCSTR(s), PChar('cxxxx'), 0);
   
   rtl := TRTL.Create;
   rtl.Free;
+  app.Free;
 end.

@@ -73,6 +73,7 @@ const
   USER32   = 'user32.dll';
   KERNEL32 = 'kernel32.dll';
   NTDLL    = 'ntdll.dll';
+  RTLDLL   = 'rtllib.dll';
                                              
 function MessageBoxA(hWnd: HWND;lpText:LPCSTR; lpCaption: LPCSTR; uType: UINT): longint; stdcall; external USER32;
 procedure ExitProcess(ExitCode: longint); stdcall; external KERNEL32;
@@ -221,6 +222,9 @@ var
 
 Procedure fpc_Copy_proc (Src, Dest, TypeInfo : Pointer); compilerproc; inline;
 
+{$ifdef RELEASE}
+function fpc_setjmp_imp(var s: jmp_buf): longint; stdcall; assembler; external RTLDLL;
+{$endif}
 implementation
 
 uses xmm;
@@ -497,6 +501,7 @@ begin
   writeln('fpc_pushexceptaddr');
 end;
 
+{$asmmode att}
 {$ifdef CPU86}
 function fpc_setjmp(var s: jmp_buf): longint; assembler; nostackframe; [public, alias: 'FPC_SETJMP']; compilerproc;
 asm
@@ -516,7 +521,8 @@ asm
   xorl %eax,%eax
 end;
 {$else}
-function fpc_setjmp(var s: jmp_buf): longint; assembler; nostackframe; [public, alias: 'FPC_SETJMP']; compilerproc;
+{$ifndef RELEASE}
+function fpc_setjmp_imp(var s: jmp_buf): longint; stdcall; assembler; nostackframe;
 asm
   movq     %rbx,jmp_buf.rbx(%rcx)
   movq     %rbp,jmp_buf.rbp(%rcx)
@@ -544,8 +550,27 @@ asm
   fnstcw   jmp_buf.fpucw(%rcx)
   xorl     %eax,%eax
 end;
+{$asmmode intel}
+function fpc_setjmp(var s: jmp_buf): longint; assembler; nostackframe; [public, alias: 'FPC_SETJMP']; compilerproc;
+asm
+  sub rsp, 32          // Shadow space für call
+  call fpc_setjmp_imp  // bar erwartet s in rcx
+  add rsp, 32          // Stack wieder freigeben
+  // Rückgabewert ist bereits in RAX
+end;
+{$else}
+{$asmmode intel}
+function fpc_setjmp(var s: jmp_buf): longint; assembler; nostackframe; [public, alias: 'FPC_SETJMP']; compilerproc;
+asm
+  sub rsp, 32          // Shadow space für call
+  call fpc_setjmp_imp  // bar erwartet s in rcx
+  add rsp, 32          // Stack wieder freigeben
+  // Rückgabewert ist bereits in RAX
+end;
+{$endif RELEASE}
 {$endif}
 
+{$asmmode att}
 procedure fpc_longjmp(var s: jmp_buf; value: LongInt); assembler; nostackframe; compilerproc; [public, alias: 'FPC_LONGJMP'];
 asm
   {$ifdef CPU86}
@@ -563,6 +588,7 @@ asm
   movl Jmp_buf.sp(%edx),%esp
   jmp Jmp_buf.pc(%edx)
   {$else}
+  {$ifdef RELEASE}  // TODO: dll !
   cmpl     $1,%edx
   adcl     $0,%edx
   movl     %edx,%eax
@@ -589,6 +615,7 @@ asm
   fnclex
   fldcw    jmp_buf.fpucw(%rcx)
   jmpq     jmp_buf.rip(%rcx)
+  {$endif RELEASE}
   {$endif}
 end;
 

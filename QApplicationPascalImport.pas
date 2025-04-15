@@ -18,13 +18,38 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
-
 {$mode delphi}
-{$WARN IMPLICIT_STRING_CAST_LOSS OFF}
-library RTLLib;
+unit QApplicationPascalImport;
 
-uses global, RTLUnit;
+interface
+uses Windows, global;
 
+type
+  QApplication = class
+  private
+    Handle: DWORD32;
+  public
+    constructor Create;
+    destructor Destroy;
+  end;
+
+function  QApplication_Create: Pointer; stdcall; external RTLDLL;
+procedure QApplication_Destroy(P: Pointer); stdcall; external RTLDLL;
+
+var
+  QApplication_Array: TArray<QApplication>;
+
+implementation
+
+constructor QApplication.Create;
 begin
-  QApplication_Counter := 0;
+  SetLength(QApplication_Array, High(QApplication_Array) + 1);
+  QApplication_Array[0] := QApplication_Create;
+end;
+
+destructor QApplication.Destroy;
+begin
+  QApplication_Destroy(nil);
+end;
+
 end.

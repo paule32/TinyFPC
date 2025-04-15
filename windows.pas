@@ -33,6 +33,7 @@ type
   LPCVOID = Pointer;
   PLARGE_INTEGER = ^LARGE_INTEGER;
   LPSTR = PAnsiChar;
+  PPAnsiChar = ^PAnsiChar;
   LPTSTR = LPSTR;
   LPWSTR = PWideChar;
   LPBYTE = ^Byte;
