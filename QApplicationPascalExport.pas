@@ -54,8 +54,8 @@ type
     (**
      * \brief This is the Pascal constructor for class QApplication.
      *)
-    //constructor Create(ArgCount: Integer; Args: Array of String);
-    constructor Create;
+    constructor Create(ArgCount: Integer; Args: PPChar); overload;
+    constructor Create; overload;
     
     (**
      * \brief This ist the Pascal destructor for class QApplication.
@@ -120,26 +120,26 @@ begin
     begin
       case a of
         '"':
+        begin
+          in_QM := True;
+          in_TEXT := True;
+          if in_SPACE then
           begin
-            in_QM := True;
-            in_TEXT := True;
-            if in_SPACE then
-            begin
-              argv[argc] := @_argv[j];
-              Inc(argc);
-            end;
-            in_SPACE := False;
+            argv[argc] := @_argv[j];
+            Inc(argc);
           end;
+          in_SPACE := False;
+        end;
         ' ', #9, #10, #13:
+        begin
+          if in_TEXT then
           begin
-            if in_TEXT then
-            begin
-              _argv[j] := #0;
-              Inc(j);
-            end;
-            in_TEXT := False;
-            in_SPACE := True;
+            _argv[j] := #0;
+            Inc(j);
           end;
+          in_TEXT := False;
+          in_SPACE := True;
+        end;
       else
         in_TEXT := True;
         if in_SPACE then
@@ -168,14 +168,18 @@ call QApplication_Destroy
 end;
 
 (**
- * \
  * \brief CTOR Create of QApplication
  * \param ArgCount - Integer
  * \param Args     - Array of String
  *)
-constructor QApplication.Create;//(
-  //ArgCount: Integer;
-  //Args: Array of String);
+constructor QApplication.Create(
+  ArgCount: Integer;
+  Args: PPChar);
+begin
+  inherited Create;
+end;
+
+constructor QApplication.Create;
 begin
   inherited Create;
 end;

@@ -10,22 +10,33 @@ EXPORTS
     ; fibonacci's memory members ...
     ; -------------------------------
     GetBsr8bit
-    xreallocmem
-    xgetmem
-    xallocmem
-    xclone
-    xmemsize
-    xmemrealsize
-    xmemavailsize
-    xfreemem
-    xzeromem
-    xmovemem
-    xfillmem
-    xmemdiffat
-    xmemcompare
-    xgetfreechunks
-    xmminit
-
+    fpcdynarraysetlength
+    
+    ; -------------------------------
+    ; compiler procedures ...
+    ; -------------------------------
+    fpcshortstrconcat
+    fpcshortstrtoansistr
+    fpcshortstrcopy
+    fpcansistrsetlength
+    fpcansistrcopy
+    
+    fpcpwidechartoansistr
+    fpcwidestrassign
+    
+    newansistring
+    makeuniqueansistring
+    itoa_exp
+    atoi_exp
+ 
+    ; -------------------------------
+    ; String routines
+    ; -------------------------------
+    StrAlloc
+    StrCat
+    StrCopy
+    StrDispose
+    
     ; -------------------------------
     ; String conversation ...
     ; -------------------------------
@@ -73,6 +84,7 @@ EXPORTS
     ; StringReplace
     ; -------------------------------
     StringReplace_A
+    new_ansistring
 
 
     ; -------------------------------

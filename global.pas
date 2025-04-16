@@ -32,7 +32,7 @@ const
   KERNEL32 = 'kenrel32.dll';
   RTLDLL   = 'rtllib.dll';
 
-{$ifdef RELEASE}
+{$ifdef DLLIMPORT}
 function CommandLineToArgvA(CmdLine: PAnsiChar; var argc: Integer): PPAnsiChar; stdcall; external RTLDLL;
 {$endif}
 

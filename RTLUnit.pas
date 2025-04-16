@@ -18,7 +18,6 @@
 // CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
 // OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // ---------------------------------------------------------------------------------------
-
 {$mode delphi}
 {$WARN IMPLICIT_STRING_CAST_LOSS OFF}
 {$M-}
@@ -194,6 +193,33 @@ end;
 exports
   GetBsr8bit            name 'GetBsr8bit',
   CommandLineToArgvA    name 'CommandLineToArgvA',
+  
+  fpchandleerror        name 'fpchandleerror',
+  fpcdivint64           name 'fpcdivint64',
+  fpcdivqword           name 'fpcdivqword',
+  
+  fpcsetjmp          name 'fpcsetjmp',
+  fpclongjmp         name 'fpclongjmp',
+  
+  fpcdynarraysetlength    name 'fpcdynarraysetlength',
+  newansistring           name 'newansistring',
+  fpctruelyansistrunique  name 'fpctruelyansistrunique',
+  
+  fpcshortstrconcat     name 'fpcshortstrconcat',
+  fpcshortstrtoansistr  name 'fpcshortstrtoansistr',
+  fpcshortstrcopy       name 'fpcshortstrcopy',
+  
+  fpcansistrassign      name 'fpcansistrassign',
+  fpcansistrsetlength   name 'fpcansistrsetlength',
+  fpcansistrdecrref     name 'fpcansistrdecrref',
+  fpcansistrcopy        name 'fpcansistrcopy',
+  
+  fpcpwidechartoansistr name 'fpcpwidechartoansistr',
+  fpcwidestrassign      name 'fpcwidestrassign',
+  
+  makeuniqueansistring  name 'makeuniqueansistring',
+  itoa_exp              name 'itoa_exp',
+  atoi_exp              name 'atoi_exp',
   
   StringReplace_A,
   

@@ -40,7 +40,7 @@ interface
 // all functions are self-contained since no external units are used
 // this unit may be adapted to environments without Windows or other standard units
 
-{$ifndef RELEASE}
+{$ifdef DLLEXPORT}
 const
   // config
   XMMCHUNKSIZE     = 512; // size of each memory chunk in bytes
@@ -85,8 +85,14 @@ function xfreemem(p: pointer): ptruint; stdcall; export;
 function xzeromem(p: pointer; len: ptruint): ptruint; stdcall; export;
 // moves len bytes from src to dst
 function xmovemem(const src: pointer; dst: pointer; len: ptruint): ptruint; stdcall; export;
+
 // fills len bytes at p with value v
-function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; export;
+function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; overload;
+function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; overload;
+
+function xfillmem_a(p: pointer; len: ptruint; v: byte): ptruint; stdcall; export;
+function xfillmem_b(p: pointer; len: ptruint; v: char): ptruint; stdcall; export;
+
 // finds offset of first difference
 function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; export;
 // compares memory at p1 and p2; returns true if equal
@@ -95,8 +101,9 @@ function xmemcompare(const p1, p2: pointer; len: ptruint): boolean; stdcall; exp
 function xgetfreechunks: integer; stdcall; export;
 // initializes the memory chunks pool (zeros all)
 procedure xmminit; stdcall; export;
-{$else}
+{$endif DLLEXPORT}
 
+{$ifdef DLLIMPORT}
 function xgetmem(size: ptruint): pointer; stdcall; external RTLDLL;
 function xallocmem(size: ptruint): pointer; stdcall; external RTLDLL;
 function xreallocmem(var p: pointer; size: ptruint): pointer; stdcall; external RTLDLL;
@@ -107,16 +114,22 @@ function xmemavailsize(const p: pointer): ptruint; stdcall; external RTLDLL;
 function xfreemem(p: pointer): ptruint; stdcall; external RTLDLL;
 function xzeromem(p: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
 function xmovemem(const src: pointer; dst: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
-function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; external RTLDLL;
+
+function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; overload;
+function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; overload;
+
+function xfillmem_a(p: pointer; len: ptruint; v: byte): ptruint; stdcall; external RTLDLL;
+function xfillmem_b(p: pointer; len: ptruint; v: char): ptruint; stdcall; external RTLDLL;
+
 function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
 function xmemcompare(const p1, p2: pointer; len: ptruint): boolean; stdcall; external RTLDLL;
 function xgetfreechunks: integer; stdcall; external RTLDLL;
 procedure xmminit; stdcall; external RTLDLL;
-{$endif RLEASE}
+{$endif DLLIMPORT}
 
 implementation
 
-{$ifndef RELEASE}
+{$ifdef DLLEXPORT}
 type
   pxmemheader = ^txmemheader;
   pxmemchunk = ^txmemchunk;
@@ -400,9 +413,6 @@ begin
   result := len;
 end;
 
-function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; begin result := xfillmem_a(p, len, v); end;
-function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; begin result := xfillmem_b(p, len, v); end;
-
 function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; export;
 begin       
   {$ifdef XMMDEBUG}
@@ -465,6 +475,12 @@ begin
   _xmemchunksend;
 end;
 
+{$endif DLLEXPORT}
+
+function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; begin result := xfillmem_a(p, len, v); end;
+function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; begin result := xfillmem_b(p, len, v); end;
+
+{$ifdef DLLEXPORT}
 exports
   xreallocmem       name 'xreallocmem',
   xgetmem           name 'xgetmem',
@@ -482,10 +498,9 @@ exports
   xmemcompare       name 'xmemcompare',
   xgetfreechunks    name 'xgetfreechunks',
   xmminit           name 'xmminit';
-
+{$endif DLLEXPORT}
 initialization
   // initialization: prepares memory chunk pool for allocations (zeros all)
   xmminit;
-{$endif RELEASE}
 
 end.

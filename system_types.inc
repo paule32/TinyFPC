@@ -32,6 +32,7 @@ type
   {$endif}
   TAnsiChar = AnsiChar;
   PChar = ^AnsiChar;
+  PPChar = ^PChar;
   PAnsiChar = ^AnsiChar;
   PAnsiString = ^AnsiString;
 

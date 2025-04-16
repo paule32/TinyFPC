@@ -20,7 +20,7 @@
 // ---------------------------------------------------------------------------------------
 
 {$mode delphi}
-{$define RELEASE}
+{$define DLLIMPORT}
 program test;
 
 uses RtlLibImport, QApplicationPascalImport;

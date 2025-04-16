@@ -4,9 +4,31 @@
 
 {$ifdef codeh}
 
+{$ifdef DLLEXPORT}
+function  fpcshortstrtoansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; export;
+procedure fpcshortstrconcat(var dests: ShortString; const s1, s2: ShortString); stdcall; export;
+function  fpcshortstrcopy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; stdcall; export;
+
+procedure fpcansistrassign(var dests: pointer; s2: pointer); stdcall; export;
+procedure fpcansistrsetlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); stdcall; export;
+procedure fpcansistrdecrref(var s: pointer); stdcall; export;
+function  fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteString; stdcall; export;
+
+function  fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; export;
+procedure fpcwidestrassign(var s1: pointer; s2: pointer); stdcall export;
+
+function  fpctruelyansistrunique(var S: Pointer): Pointer; stdcall; export;
+function  makeuniqueansistring(p: pointer): pointer; stdcall; export;
+
+function  itoa_exp(num: integer; base: integer=10): pansichar; stdcall; export;
+function  atoi_exp(str: pansichar): integer; stdcall; export;
+
+function newansistring(len: SizeInt): pointer; stdcall; export;
+{$endif DLLEXPORT}
+
 // short
 procedure fpc_shortstr_setlength(var s: ShortString; len: SizeInt); compilerproc;
-function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; compilerproc;
+function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; compilerproc;
 procedure fpc_shortstr_to_shortstr(out res: ShortString; const sstr: ShortString); compilerproc;
 function fpc_val_sint_shortstr(destsize: SizeInt; const s: ShortString; out code: ValSInt): ValSInt; compilerproc;
 procedure fpc_shortstr_sint(v: ValSInt; len: SizeInt; out s: ShortString); compilerproc;
@@ -49,16 +71,18 @@ function strlen(p: pchar): dword;
 //function strlen(s: shortstring): dword;
 function strlen(s: ansistring): dword;
 
-function new_ansistring(len: SizeInt): pointer;
+function new_ansistring(len: SizeInt): pointer; stdcall; export;
+
+//function new_ansistring(len: SizeInt): pointer;
 function new_widestring(len: SizeInt): pointer;
 function make_unique_ansistring(s: ansistring): ansistring;
 function make_unique_ansistring(p: pointer): pointer;
 
 // ansi to int
-function atoi(str: pansichar): integer;
+function atoi(str: pansichar): integer; stdcall;
 // int to ansi
 // for int64 fix: Error: Unknown compilerproc "fpc_mod_int64". Check if you use the correct run time library.
-function itoa(num: integer; base: integer=10): pansichar;
+function itoa(num: integer; base: integer=10): pansichar; stdcall;
 
 {$endif}
 
@@ -70,7 +94,8 @@ begin
   s[0] := chr(len);
 end;
 
-function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcshortstrtoansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; export;
 var
   len: integer;
 begin
@@ -78,6 +103,18 @@ begin
   setlength(result, len);
   move(s2[1], result[1], len);
 end;
+function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; compilerproc;
+begin
+  result := fpcshortstrtoansistr(s2,cp);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcshortstrtoansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; external RTLDLL;
+function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; compilerproc;
+begin
+  result := fpcshortstrtoansistr(s2,cp);
+end;
+{$endif DLLIMPORT}
 
 procedure fpc_shortstr_to_shortstr(out res: ShortString; const sstr: ShortString); [public, alias: 'FPC_SHORTSTR_TO_SHORTSTR']; compilerproc;
 var
@@ -104,7 +141,8 @@ begin
   move(s2[1], res[1], length(s2));
 end;
 
-procedure fpc_shortstr_concat(var dests: ShortString; const s1, s2: ShortString); compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcshortstrconcat(var dests: ShortString; const s1, s2: ShortString); stdcall; export;
 var
   len, cap, m: integer;
 begin
@@ -125,8 +163,21 @@ begin
   // and the new length is...
   dests[0] := chr(len);
 end;
+procedure fpc_shortstr_concat(var dests: ShortString; const s1, s2: ShortString); compilerproc;
+begin
+  fpcshortstrconcat(dests, s1, s2);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcshortstrconcat(var dests: ShortString; const s1, s2: ShortString); stdcall; external RTLDLL;
+procedure fpc_shortstr_concat(var dests: ShortString; const s1, s2: ShortString); compilerproc;
+begin
+  fpcshortstrconcat(dests, s1, s2);
+end;
+{$endif DLLIMPORT}
 
-function fpc_shortstr_copy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcshortstrcopy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; stdcall; export;
 begin
   if count < 0 then count := 0;
   if index > 1 then dec(index) else index := 0;
@@ -137,8 +188,21 @@ begin
   result[0] := chr(count);
   move(s[index+1], result[1], count);
 end;
+function fpc_shortstr_copy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; compilerproc;
+begin
+  result := fpcshortstrcopy(s, index, count);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcshortstrcopy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; stdcall; external RTLDLL;
+function fpc_shortstr_copy(const s: ShortString; index: SizeInt; count: SizeInt): ShortString; compilerproc;
+begin
+  result := fpcshortstrcopy(s, index, count);
+end;
+{$endif DLLIMPORT}
 
-procedure fpc_ansistr_assign(var dests: pointer; s2: pointer); [public, alias: 'FPC_ANSISTR_ASSIGN'];
+{$ifdef DLLEXPORT}
+procedure fpcansistrassign(var dests: pointer; s2: pointer); stdcall; export;
 begin
   if dests = s2 then exit;
   if s2 <> nil then
@@ -150,8 +214,21 @@ begin
   // point dests to s2
   dests := s2;
 end;
+procedure fpc_ansistr_assign(var dests: pointer; s2: pointer); [public, alias: 'FPC_ANSISTR_ASSIGN'];
+begin
+  fpcansistrassign(dests, s2);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcansistrassign(var dests: pointer; s2: pointer); stdcall; external RTLDLL;
+procedure fpc_ansistr_assign(var dests: pointer; s2: pointer); [public, alias: 'FPC_ANSISTR_ASSIGN'];
+begin
+  fpcansistrassign(dests, s2);
+end;
+{$endif DLLIMPORT}
 
-procedure fpc_ansistr_setlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); [public, alias: 'FPC_ANSISTR_SETLENGTH']; compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcansistrsetlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); stdcall; export;
 var
   Temp: Pointer;
   lens, lena: SizeInt;
@@ -187,8 +264,21 @@ begin
   end else  { length=0, deallocate the string }
     fpc_ansistr_decr_ref(Pointer(S));
 end;
+procedure fpc_ansistr_setlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); [public, alias: 'FPC_ANSISTR_SETLENGTH']; compilerproc;
+begin
+  fpcansistrsetlength(S, l, cp);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcansistrsetlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); stdcall; external RTLDLL;
+procedure fpc_ansistr_setlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); [public, alias: 'FPC_ANSISTR_SETLENGTH']; compilerproc;
+begin
+  fpcansistrsetlength(S, l, cp);
+end;
+{$endif DLLIMPORT}
 
-procedure fpc_ansistr_decr_ref(var s: pointer); [public , alias: 'FPC_ANSISTR_DECR_REF']; compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcansistrdecrref(var s: pointer); stdcall; export;
 var
   p: PAnsiRec;
 begin
@@ -202,6 +292,18 @@ begin
   dec(p^.Ref);
   if p^.Ref <= 0 then FreeMem(p);
 end;
+procedure fpc_ansistr_decr_ref(var s: pointer); [public , alias: 'FPC_ANSISTR_DECR_REF']; compilerproc;
+begin
+  fpcansistrdecrref(s);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcansistrdecrref(var s: pointer); stdcall; external RTLDLL;
+procedure fpc_ansistr_decr_ref(var s: pointer); [public , alias: 'FPC_ANSISTR_DECR_REF']; compilerproc;
+begin
+  fpcansistrdecrref(s);
+end;
+{$endif DLLIMPORT}
 
 // alias for internal use
 procedure fpc_ansistr_decr_ref(var s: pointer); [external name 'FPC_ANSISTR_DECR_REF'];
@@ -227,7 +329,8 @@ begin
   writeln('fpc_ansistr_concat_multi');
 end;
 
-function fpc_truely_ansistr_unique(var S: Pointer): Pointer;
+{$ifdef DLLEXPORT}
+function fpctruelyansistrunique(var S: Pointer): Pointer; stdcall; export;
 var
   SNew: Pointer;
   L: SizeInt;
@@ -241,6 +344,18 @@ begin
   pointer(S) := SNew;
   pointer(result) := SNew;
 end;
+function fpc_truely_ansistr_unique(var S: Pointer): Pointer;
+begin
+  result := fpctruelyansistrunique(s);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpctruelyansistrunique(var S: Pointer): Pointer; stdcall; external RTLDLL;
+function fpc_truely_ansistr_unique(var S: Pointer): Pointer;
+begin
+  result := fpctruelyansistrunique(s);
+end;
+{$endif DLLIMPORT}
 
 function fpc_ansistr_unique(var S: Pointer): Pointer; compilerproc; [public, alias: 'FPC_ANSISTR_UNIQUE'];
 begin
@@ -268,7 +383,8 @@ begin
   result := CompareByte(s1[1], s2[1], length(s1));
 end;
 
-function fpc_ansistr_copy(const s: RawByteString; index, size: SizeInt): RawByteString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteString; stdcall; export;
 var
   ResultAddress : Pointer;
 begin
@@ -292,8 +408,8 @@ begin
         PAnsiRec(ResultAddress-AnsiFirstOff)^.CodePage:=PAnsiRec(Pointer(S)-AnsiFirstOff)^.CodePage;
       end;
    end;
-   fpc_ansistr_decr_ref(Pointer(fpc_ansistr_copy));
-  Pointer(fpc_ansistr_Copy):=ResultAddress;
+   fpc_ansistr_decr_ref(Pointer(fpcansistrcopy));
+  Pointer(fpcansistrCopy):=ResultAddress;
 end;
 //if count < 0 then count := 0;
 //if index > 1 then dec(index) else index := 0;
@@ -303,8 +419,21 @@ end;
 //  count := length(s)-index;
 //result[0] := chr(count);
 //move(s[index+1], result[1], count);
+function fpc_ansistr_copy(const s: RawByteString; index, size: SizeInt): RawByteString; compilerproc;
+begin
+  result := fpcansistrcopy(s, index, size);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteString; stdcall; external RTLDLL;
+function fpc_ansistr_copy(const s: RawByteString; index, size: SizeInt): RawByteString; compilerproc;
+begin
+  result := fpcansistrcopy(s, index, size);
+end;
+{$endif DLLIMPORT}
 
-procedure fpc_widestr_assign(var s1: pointer; s2: pointer); [public, alias: 'FPC_WIDESTR_ASSIGN']; compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcwidestrassign(var s1: pointer; s2: pointer); stdcall export;
 begin
   if s1 = s2 then exit;
   if s2 <> nil then begin
@@ -313,6 +442,18 @@ begin
   end else
     fpc_widestr_decr_ref(s1); // will set s1 to nil
 end;
+procedure fpc_widestr_assign(var s1: pointer; s2: pointer); [public, alias: 'FPC_WIDESTR_ASSIGN']; compilerproc;
+begin
+  fpcwidestrassign(s1, s2);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcwidestrassign(var s1: pointer; s2: pointer); stdcall external RTLDLL;
+procedure fpc_widestr_assign(var s1: pointer; s2: pointer); [public, alias: 'FPC_WIDESTR_ASSIGN']; compilerproc;
+begin
+  fpcwidestrassign(s1, s2);
+end;
+{$endif DLLIMPORT}
 
 procedure fpc_widestr_setlength(var s: WideString; l: sizeint); [public, alias: 'FPC_WIDESTR_SETLENGTH']; compilerproc;
 begin
@@ -376,7 +517,8 @@ begin
   if len > 0 then move(p^, result[1], len*2);
 end;
 
-function fpc_pwidechar_to_ansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; export;
 var
   len, i: SizeInt;
 begin
@@ -391,6 +533,18 @@ begin
     end;
   end;
 end;
+function fpc_pwidechar_to_ansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; compilerproc;
+begin
+  result := fpcpwidechartoansistr(p, cp);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; external RTLDLL;
+function fpc_pwidechar_to_ansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; compilerproc;
+begin
+  result := fpcpwidechartoansistr(p, cp);
+end;
+{$endif DLLIMPORT}
 
 { ****************************************
   UnicodeChar
@@ -424,8 +578,9 @@ begin
   result := length(s);
 end;
 
+{$ifdef DLLEXPORT}
 // init new string to length 0 and refcount 1
-function new_ansistring(len: SizeInt): pointer;
+function newansistring(len: SizeInt): pointer; stdcall; export;
 begin
   result := GetMem(len+(AnsiFirstOff+SizeOf(AnsiChar)));
   if result = nil then exit;
@@ -436,6 +591,18 @@ begin
   inc(result, AnsiFirstOff);
   PAnsiChar(result)^ := #0; // null terminated
 end;
+function new_ansistring(len: SizeInt): pointer; stdcall; export;
+begin
+  result := newansistring(len);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function newansistring(len: SizeInt): pointer; stdcall; external RTLDLL;
+function new_ansistring(len: SizeInt): pointer; stdcall; export;
+begin
+  result := newansistring(len);
+end;
+{$endif DLLIMPORT}
 
 // init new string to length 0 and refcount 1
 function new_widestring(len: SizeInt): pointer;
@@ -454,7 +621,8 @@ begin
   move(s[1], result[1], length(s));
 end;
 
-function make_unique_ansistring(p: pointer): pointer;
+{$ifdef DLLEXPORT}
+function makeuniqueansistring(p: pointer): pointer; stdcall; export;
 var
   a: PAnsiRec;
   s: ansistring;
@@ -464,9 +632,22 @@ begin
   move(a, s[1], a^.len);
   pointer(result) := pointer(a+AnsiFirstOff);
 end;
+function make_unique_ansistring(p: pointer): pointer;
+begin
+  result := makeuniqueansistring(p);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function makeuniqueansistring(p: pointer): pointer; stdcall; external RTLDLL;
+function make_unique_ansistring(p: pointer): pointer;
+begin
+  result := makeuniqueansistring(p);
+end;
+{$endif DLLIMPORT}
 
 // ansi to int
-function atoi(str: pansichar): integer;
+{$ifdef DLLEXPORT}
+function atoi_exp(str: pansichar): integer; stdcall export;
 var
   i: integer;
   c: char;
@@ -480,10 +661,23 @@ begin
     result := result*10 + ord(c)-ord('0');
   end;
 end;
+function atoi(str: pansichar): integer; stdcall;
+begin
+  result := atoi_exp(str);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function atoi_exp(str: pansichar): integer; stdcall; external RTLDLL;
+function atoi(str: pansichar): integer; stdcall;
+begin
+  result := atoi_exp(str);
+end;
+{$endif DLLIMPORT}
 
 // int to ansi
 // could do int64 if: Error: Unknown compilerproc "fpc_mod_int64". Check if you use the correct run time library.
-function itoa(num: integer; base: integer=10): pansichar;
+{$ifdef DLLEXPORT}
+function itoa_exp(num: integer; base: integer=10): pansichar; stdcall; export;
 procedure reverse(str: pansichar; len: integer);
 var
   st, en: integer;
@@ -535,6 +729,18 @@ begin
   // reverse
   reverse(result, i);
 end;
+function itoa(num: integer; base: integer=10): pansichar; stdcall;
+begin
+  result := itoa_exp(num, base);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function itoa_exp(num: integer; base: integer=10): pansichar; stdcall; external RTLDLL;
+function itoa(num: integer; base: integer): pansichar; stdcall;
+begin
+  result := itoa_exp(num, base);
+end;
+{$endif DLLIMPORT}
 
 {$endif}
 

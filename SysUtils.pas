@@ -24,14 +24,25 @@ unit SysUtils;
 interface
 uses global;
 
+{$ifdef DLLEXPORT}
 function  IntToStr(Value:  Int64): PChar; stdcall; export;
 function  UIntToStr(Value: UInt64): AnsiString; stdcall; export;
 function  StrAlloc(Size: Cardinal): PChar; stdcall; export;
 procedure StrDispose(P: PChar); stdcall; export;
 function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; export;
 function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; export;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function  IntToStr(Value:  Int64): PChar; stdcall; external RTLDLL;
+function  UIntToStr(Value: UInt64): AnsiString; stdcall; external RTLDLL;
+function  StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
+procedure StrDispose(P: PChar); stdcall; external RTLDLL;
+function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+{$endif DLLIMPORT}
 implementation
 
+{$ifdef DLLEXPORT}
 function StrAlloc(Size: Cardinal): PChar; stdcall; export;
 begin
   GetMem(result, Size + 1); // +1 für Nullterminator
@@ -130,7 +141,6 @@ begin
     result := nil;
     Exit;
   end;
-  MessageBoxA(0, P, 'XXXXXXXXXXXXXXXXXX', 0);
   result := P;
 end;
 
@@ -160,5 +170,6 @@ exports
   StrCopy    name 'StrCopy',
   StrDispose name 'StrDispose'
   ;
+{$endif DLLEXPORT}
 
 end.
