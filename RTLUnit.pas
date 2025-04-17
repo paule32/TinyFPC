@@ -25,7 +25,7 @@ unit RTLUnit;
 
 interface
 
-uses Windows, global, QApplicationPascalExport;
+uses Windows, global, SysUtils, QApplicationPascalExport;
 
 type
   TByteLookup = array[0..255] of Byte;
@@ -202,7 +202,10 @@ exports
   fpclongjmp         name 'fpclongjmp',
   
   fpcdynarraysetlength    name 'fpcdynarraysetlength',
+  
   newansistring           name 'newansistring',
+  newwidestring           name 'newwidestring',
+  
   fpctruelyansistrunique  name 'fpctruelyansistrunique',
   
   fpcshortstrconcat     name 'fpcshortstrconcat',
@@ -216,10 +219,20 @@ exports
   
   fpcpwidechartoansistr name 'fpcpwidechartoansistr',
   fpcwidestrassign      name 'fpcwidestrassign',
+  fpcpwidechartowidestr name 'fpcpwidechartowidestr',
+  fpcpchartoansistr     name 'fpcpchartoansistr',
   
   makeuniqueansistring  name 'makeuniqueansistring',
+  
+  IntToStrPC            name 'IntToStrPC',
+  IntToStrPC64          name 'IntToStrPC64',
+  UIntToStrA            name 'UIntToStrA',
+  
   itoa_exp              name 'itoa_exp',
   atoi_exp              name 'atoi_exp',
+  
+  StrCat_     name 'StrCat_',
+  StrCopy_    name 'StrCopy_',
   
   StringReplace_A,
   

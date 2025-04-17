@@ -31,6 +31,14 @@ function  StrAlloc(Size: Cardinal): PChar; stdcall; export;
 procedure StrDispose(P: PChar); stdcall; export;
 function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; export;
 function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; export;
+
+function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; export;
+function IntToStrPC64(Value: Int64): PChar; stdcall; export;
+
+function UIntToStrA(Value: UInt64): AnsiString; stdcall; export;
+
+function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; export;
+function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; export;
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
 function  IntToStr(Value:  Int64): PChar; stdcall; external RTLDLL;
@@ -39,10 +47,16 @@ function  StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
 procedure StrDispose(P: PChar); stdcall; external RTLDLL;
 function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+
+function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; external RTLDLL;
+function IntToStrPC64(Value: Int64): PChar; stdcall; external RTLDLL;
+
+function UIntToStrA(Value: UInt64): AnsiString; stdcall; external RTLDLL;
+function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 {$endif DLLIMPORT}
 implementation
 
-{$ifdef DLLEXPORT}
 function StrAlloc(Size: Cardinal): PChar; stdcall; export;
 begin
   GetMem(result, Size + 1); // +1 für Nullterminator
@@ -55,7 +69,8 @@ begin
     FreeMem(P);
 end;
 
-function StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; export;
+{$ifdef DLLEXPORT}
+function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; export;
 begin
   Result := Dest;
   while Source^ <> #0 do
@@ -66,8 +81,21 @@ begin
   end;
   Dest^ := #0;  // Nullterminator setzen
 end;
+function StrCopy(Dest: PChar; Source: PChar): PChar; stdcall;
+begin
+  StrCopy_(Dest, Source);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCopy(Dest: PChar; Source: PChar): PChar; stdcall;
+begin
+  StrCopy_(Dest, Source);
+end;
+{$endif DLLIMPORT}
 
-function StrCat(Dest: PChar; Source: PChar): PChar; stdcall; export;
+{$ifdef DLLEXPORT}
+function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; export;
 var
   D: PChar;
 begin
@@ -87,8 +115,22 @@ begin
   D^ := #0; // Nullterminator setzen
   Result := Dest;
 end;
+function StrCat(Dest: PChar; Source: PChar): PChar; stdcall;
+begin
+  result := StrCat_(Dest, Source);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCat(Dest: PChar; Source: PChar): PChar; stdcall;
+begin
+  result := StrCat_(Dest, Source);
+end;
+{$endif DLLIMPORT}
 
-function IntToStrPChar(Value: Int64; Buffer: PChar; BufLen: Integer): PChar;
+
+{$ifdef DLLEXPORT}
+function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; export;
 var
   i: Integer;
   isNegative: Boolean;
@@ -128,8 +170,21 @@ begin
 
   Result := @Buffer[i + 1];
 end;
+function IntToStrPChar(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; overload; stdcall;
+begin
+  result := IntToStrPC(Value, Buffer, BufLen);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; external RTLDLL;
+function IntToStrPChar(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; overload; stdcall;
+begin
+  result := IntToStrPC(Value, Buffer, BufLen);
+end;
+{$endif DLLIMPORT}
 
-function IntToStr(Value: Int64): PChar; stdcall; export;
+{$ifdef DLLEXPORT}
+function IntToStrPC64(Value: Int64): PChar; stdcall; export;
 var
   Buffer: array[0..63] of Char;
   P: PChar;
@@ -143,8 +198,21 @@ begin
   end;
   result := P;
 end;
+function IntToStr(Value: Int64): PChar; stdcall;
+begin
+  result := IntToStrPC64(Value);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function IntToStrPC64(Value: Int64): PChar; stdcall; external RTLDLL;
+function IntToStr(Value: Int64): PChar; overload; stdcall;
+begin
+  result := IntToStrP64(Value);
+end;
+{$endif DLLIMPORT}
 
-function UIntToStr(Value: UInt64): AnsiString; stdcall; export;
+{$ifdef DLLEXPORT}
+function UIntToStrA(Value: UInt64): AnsiString; stdcall; export;
 var
   temp: array[0..31] of Char;
   i: Integer;
@@ -161,6 +229,19 @@ begin
 
   Result := AnsiString(@temp[i + 1]);
 end;
+function UIntToStr(Value: UInt64): AnsiString; stdcall;
+begin
+  result := UIntToStrA(Value);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function UIntToStrA(Value: UInt64): AnsiString; stdcall; external RTLDLL;
+function UIntToStr(Value: UInt64): AnsiString; stdcall;
+begin
+  result := UIntToStrA(Value);
+end;
+{$endif DLLIMPORT}
+
 
 exports
   IntToStr   name 'IntToStr',
@@ -170,6 +251,5 @@ exports
   StrCopy    name 'StrCopy',
   StrDispose name 'StrDispose'
   ;
-{$endif DLLEXPORT}
 
 end.

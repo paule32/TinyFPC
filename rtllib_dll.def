@@ -20,11 +20,15 @@ EXPORTS
     fpcshortstrcopy
     fpcansistrsetlength
     fpcansistrcopy
+    fpcpwidechartowidestr
+    fpcpchartoansistr
     
     fpcpwidechartoansistr
     fpcwidestrassign
     
     newansistring
+    newwidestring
+    
     makeuniqueansistring
     itoa_exp
     atoi_exp
@@ -33,14 +37,21 @@ EXPORTS
     ; String routines
     ; -------------------------------
     StrAlloc
-    StrCat
+    ;StrCat
     StrCopy
     StrDispose
+    
+    StrCat_
+    StrCopy_
     
     ; -------------------------------
     ; String conversation ...
     ; -------------------------------
+    IntToStrPC
+    IntToStrPC64
+    
     IntToStr
+    UIntToStrA
     UIntToStr
     
     ; -------------------------------

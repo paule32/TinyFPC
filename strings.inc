@@ -16,14 +16,19 @@ function  fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteS
 
 function  fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; export;
 procedure fpcwidestrassign(var s1: pointer; s2: pointer); stdcall export;
+function  fpcpwidechartowidestr(const p: PWideChar): WideString; stdcall; export;
 
 function  fpctruelyansistrunique(var S: Pointer): Pointer; stdcall; export;
 function  makeuniqueansistring(p: pointer): pointer; stdcall; export;
+
+function fpcpchartoansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; stdcall; export;
 
 function  itoa_exp(num: integer; base: integer=10): pansichar; stdcall; export;
 function  atoi_exp(str: pansichar): integer; stdcall; export;
 
 function newansistring(len: SizeInt): pointer; stdcall; export;
+function newwidestring(len: SizeInt): pointer; stdcall; export;
+
 {$endif DLLEXPORT}
 
 // short
@@ -72,9 +77,8 @@ function strlen(p: pchar): dword;
 function strlen(s: ansistring): dword;
 
 function new_ansistring(len: SizeInt): pointer; stdcall; export;
+function new_widestring(len: SizeInt): pointer; stdcall; export;
 
-//function new_ansistring(len: SizeInt): pointer;
-function new_widestring(len: SizeInt): pointer;
 function make_unique_ansistring(s: ansistring): ansistring;
 function make_unique_ansistring(p: pointer): pointer;
 
@@ -493,7 +497,8 @@ begin
   writeln('fpc_pchar_to_shortstr');
 end;
 
-function fpc_pchar_to_ansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcpchartoansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; stdcall; export;
 var
   l: dword;
 begin
@@ -501,12 +506,25 @@ begin
   pointer(result) := new_ansistring(l);
   move(p^, result[1], l);
 end;
+function fpc_pchar_to_ansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; compilerproc;
+begin
+  result := fpcpchartoansistr(p, cp);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcpchartoansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; stdcall; external RTLDLL;
+function fpc_pchar_to_ansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; compilerproc;
+begin
+  result := fpcpchartoansistr(p, cp);
+end;
+{$endif DLLIMPORT}
 
 { ****************************************
   WideChar
   **************************************** }
 
-function fpc_pwidechar_to_widestr(const p: PWideChar): WideString; compilerproc;
+{$ifdef DLLEXPORT}
+function fpcpwidechartowidestr(const p: PWideChar): WideString; stdcall; export;
 var
   len: SizeInt;
 begin
@@ -516,6 +534,18 @@ begin
   setlength(result, len);
   if len > 0 then move(p^, result[1], len*2);
 end;
+function fpc_pwidechar_to_widestr(const p: PWideChar): WideString; compilerproc;
+begin
+  result := fpcpwidechartowidestr(p);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcpwidechartowidestr(const p: PWideChar): WideString; stdcall; external RTLDLL;
+function fpc_pwidechar_to_widestr(const p: PWideChar): WideString; compilerproc;
+begin
+  result := fpcpwidechartowidestr(p);
+end;
+{$endif DLLIMPORT}
 
 {$ifdef DLLEXPORT}
 function fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; export;
@@ -578,8 +608,8 @@ begin
   result := length(s);
 end;
 
-{$ifdef DLLEXPORT}
 // init new string to length 0 and refcount 1
+{$ifdef DLLEXPORT}
 function newansistring(len: SizeInt): pointer; stdcall; export;
 begin
   result := GetMem(len+(AnsiFirstOff+SizeOf(AnsiChar)));
@@ -605,7 +635,8 @@ end;
 {$endif DLLIMPORT}
 
 // init new string to length 0 and refcount 1
-function new_widestring(len: SizeInt): pointer;
+{$ifdef DLLEXPORT}
+function newwidestring(len: SizeInt): pointer; stdcall; export;
 begin
   result := GetMem(len * sizeof(widechar) + WideRecLen);
   if result = nil then exit;
@@ -613,6 +644,18 @@ begin
   PWideRec(result)^.First := #0;
   inc(result, WideFirstOff);
 end;
+function new_widestring(len: SizeInt): pointer; stdcall; export;
+begin
+  result := newwidestring(len);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function newwidestring(len: SizeInt): pointer; stdcall; external RTLDLL;
+function new_widestring(len: SizeInt): pointer; stdcall; export;
+begin
+  result := newwidestring(len);
+end;
+{$endif DLLIMPORT}
 
 function make_unique_ansistring(s: ansistring): ansistring;
 begin
