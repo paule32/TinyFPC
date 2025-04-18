@@ -13,6 +13,8 @@ procedure fpcansistrassign(var dests: pointer; s2: pointer); stdcall; export;
 procedure fpcansistrsetlength(var S: rawbytestring; l: SizeInt; cp: TSystemCodePage); stdcall; export;
 procedure fpcansistrdecrref(var s: pointer); stdcall; export;
 function  fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteString; stdcall; export;
+function  fpcansistrcompareequal(const s1, s2: RawByteString): SizeInt; stdcall; export;
+procedure fpcansistrconcat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); stdcall; export;
 
 function  fpcpwidechartoansistr(const p: PWideChar; cp: TSystemCodePage): AnsiString; stdcall; export;
 procedure fpcwidestrassign(var s1: pointer; s2: pointer); stdcall export;
@@ -21,7 +23,8 @@ function  fpcpwidechartowidestr(const p: PWideChar): WideString; stdcall; export
 function  fpctruelyansistrunique(var S: Pointer): Pointer; stdcall; export;
 function  makeuniqueansistring(p: pointer): pointer; stdcall; export;
 
-function fpcpchartoansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; stdcall; export;
+function  fpcpchartoansistr(const p: PAnsiChar; cp: TSystemCodePage): RawByteString; stdcall; export;
+procedure fpcwidestrincrref(var s: pointer); stdcall; export;
 
 function  itoa_exp(num: integer; base: integer=10): pansichar; stdcall; export;
 function  atoi_exp(str: pansichar): integer; stdcall; export;
@@ -321,12 +324,25 @@ begin
   //inclocked(PAnsiRec(s-AnsiFirstOff)^.Ref);
 end;
 
-procedure fpc_ansistr_concat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcansistrconcat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); stdcall; export;
 begin
   pointer(dests) := new_ansistring(length(s1)+length(s2));
   move(s1[1], dests[1], length(s1));
   move(s2[1], dests[length(s1)+1], length(s2));
 end;
+procedure fpc_ansistr_concat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); compilerproc;
+begin
+  fpcansistrconcat(dests, s1, s2, cp);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcansistrconcat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); stdcall; external RTLDLL;
+procedure fpc_ansistr_concat(var dests: RawByteString; const s1, s2: RawByteString; cp: TSystemCodePage); compilerproc;
+begin
+  fpcansistrconcat(dests, s1, s2, cp);
+end;
+{$endif DLLIMPORT}
 
 procedure fpc_ansistr_concat_multi(var dests: RawByteString; const sarr: array of RawByteString; cp: TSystemCodePage); compilerproc;
 begin
@@ -379,13 +395,26 @@ begin
 end;
 
 // 0 = equal
-function fpc_ansistr_compare_equal(const s1, s2: RawByteString): SizeInt; compilerproc; [public, alias: 'FPC_ANSISTR_COMPARE_EQUAL'];
+{$ifdef DLLEXPORT}
+function fpcansistrcompareequal(const s1, s2: RawByteString): SizeInt; stdcall; export;
 begin
   if pointer(s1) = pointer(s2) then exit(0);
   if (pointer(s1) = nil) or (pointer(s2) = nil) then exit(-1);
   if length(s1) <> length(s2) then exit(-1);
   result := CompareByte(s1[1], s2[1], length(s1));
 end;
+function fpc_ansistr_compare_equal(const s1, s2: RawByteString): SizeInt; compilerproc; [public, alias: 'FPC_ANSISTR_COMPARE_EQUAL'];
+begin
+  result := fpcansistrcompareequal(s1, s2);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function fpcansistrcompareequal(const s1, s2: RawByteString): SizeInt; stdcall; external RTLDLL;
+function fpc_ansistr_compare_equal(const s1, s2: RawByteString): SizeInt; compilerproc; [public, alias: 'FPC_ANSISTR_COMPARE_EQUAL'];
+begin
+  result := fpcansistrcompareequal(s1, s2);
+end;
+{$endif DLLIMPORT}
 
 {$ifdef DLLEXPORT}
 function fpcansistrcopy(const s: RawByteString; index, size: SizeInt): RawByteString; stdcall; export;
@@ -475,7 +504,8 @@ end;
 { alias for internal use }
 procedure fpc_widestr_decr_ref(var s: pointer); [external name 'FPC_WIDESTR_DECR_REF']; compilerproc;
 
-procedure fpc_widestr_incr_ref(var s: pointer); [public, alias: 'FPC_WIDESTR_INCR_REF']; compilerproc;
+{$ifdef DLLEXPORT}
+procedure fpcwidestrincrref(var s: pointer); stdcall; export;
 var
   p : pointer;
 Begin
@@ -484,6 +514,18 @@ Begin
   move(s^, p^, (length(WideString(s))+1)*sizeof(widechar));
   s := p;
 end;
+procedure fpc_widestr_incr_ref(var s: pointer); [public, alias: 'FPC_WIDESTR_INCR_REF']; compilerproc;
+begin
+  fpcwidestrincrref(s);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure fpcwidestrincrref(var s: pointer); stdcall; external RTLDLL;
+procedure fpc_widestr_incr_ref(var s: pointer); [public, alias: 'FPC_WIDESTR_INCR_REF']; compilerproc;
+begin
+  fpcwidestrincrref(s);
+end;
+{$endif DLLIMPORT}
 
 { alias for internal use }
 procedure fpc_widestr_incr_ref(var s: pointer); [external name 'FPC_WIDESTR_INCR_REF']; compilerproc;

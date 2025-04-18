@@ -214,9 +214,17 @@ begin
   TotalLen := 128;
   
   R := StrAlloc(TotalLen);
+  S := StrAlloc(16);
+  
+  //StrCopy(S, IntToStr(ArgsCount));
   
   StrCopy(R, 'Count of Parameters: ');
-  StrCat (R, IntToStr(ArgsCount));
+  StrCopy(S, IntToStr(ArgsCount));
+  
+  MessageBoxA(0, R, '222  11  222', 0);
+  MessageBoxA(0, S, '222  11  222', 0);
+  
+  StrCat (R, S);
   
   MessageBoxA(0, R, '222  11  222', 0);
   

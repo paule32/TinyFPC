@@ -159,6 +159,8 @@ function fpc_dynarray_high(p: pointer): tdynarrayindex; compilerproc;
 procedure fpc_dynarray_incr_ref(p: pointer); compilerproc;
 procedure fpc_dynarray_clear(var p: pointer; ti: pointer); compilerproc;
 
+Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
+
 // -- console mode support --------------------------
 
 {$ifdef CONSOLE}
@@ -863,6 +865,41 @@ begin
   end;
   p := nil;
 end;
+
+Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
+var
+  i  : SizeInt;
+begin
+  result := '';
+  
+  if (zerobased) then
+  begin
+    i := 0;
+    repeat
+      if (arr[i] = #0) Then
+      begin
+        i := 0;
+        exit;
+      end else
+      begin
+        result := result + arr[i];
+      end;
+      inc(i);
+    until i = Length(arr);
+  end else
+  begin
+    i := 0;
+    repeat
+      result := result + arr[i];
+      inc(i);
+    until i = high(arr)+1;
+  end;
+  if i > 0 then
+  begin
+    Move (arr[0],Pointer(fpc_CharArray_To_AnsiStr)^,i);
+  end;
+end;
+
 
 {$asmmode intel}
 function InterlockedDecrement(var Addend: LongInt): LongInt; assembler;

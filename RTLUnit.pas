@@ -212,29 +212,26 @@ exports
   fpcshortstrtoansistr  name 'fpcshortstrtoansistr',
   fpcshortstrcopy       name 'fpcshortstrcopy',
   
-  fpcansistrassign      name 'fpcansistrassign',
-  fpcansistrsetlength   name 'fpcansistrsetlength',
-  fpcansistrdecrref     name 'fpcansistrdecrref',
-  fpcansistrcopy        name 'fpcansistrcopy',
+  fpcansistrassign        name 'fpcansistrassign',
+  fpcansistrsetlength     name 'fpcansistrsetlength',
+  fpcansistrdecrref       name 'fpcansistrdecrref',
+  fpcansistrcopy          name 'fpcansistrcopy',
+  fpcansistrcompareequal  name 'fpcansistrcompareequal',
   
   fpcpwidechartoansistr name 'fpcpwidechartoansistr',
   fpcwidestrassign      name 'fpcwidestrassign',
   fpcpwidechartowidestr name 'fpcpwidechartowidestr',
+  fpcwidestrincrref     name 'fpcwidestrincrref',
   fpcpchartoansistr     name 'fpcpchartoansistr',
   
   makeuniqueansistring  name 'makeuniqueansistring',
   
-  IntToStrPC            name 'IntToStrPC',
-  IntToStrPC64          name 'IntToStrPC64',
   UIntToStrA            name 'UIntToStrA',
   
   itoa_exp              name 'itoa_exp',
   atoi_exp              name 'atoi_exp',
   
-  StrCat_     name 'StrCat_',
-  StrCopy_    name 'StrCopy_',
-  
-  StringReplace_A,
+  StringReplace_A  name 'StringReplace_A',
   
   QApplication_Create   name 'QApplication_Create',
   QApplication_Destroy  name 'QApplication_Destroy',

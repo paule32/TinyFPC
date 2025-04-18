@@ -69,8 +69,11 @@ function RtlCompareMemory(src1, src2: pointer; len: sizeuint): sizeuint; stdcall
 function xgetmem(size: ptruint): pointer; stdcall; export;
 // allocates and zeroes memory of given size
 function xallocmem(size: ptruint): pointer; stdcall; export;
+
 // resizes the memory block at p
-function xreallocmem(var p: pointer; size: ptruint): pointer; stdcall; export;
+function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; export;
+function xreallocmem(var p: pointer; size: QWord): pointer;
+
 // clones the memory block at p
 function xclone(const p: pointer): pointer; stdcall; export;
 // returns size of memory block at p
@@ -106,7 +109,10 @@ procedure xmminit; stdcall; export;
 {$ifdef DLLIMPORT}
 function xgetmem(size: ptruint): pointer; stdcall; external RTLDLL;
 function xallocmem(size: ptruint): pointer; stdcall; external RTLDLL;
-function xreallocmem(var p: pointer; size: ptruint): pointer; stdcall; external RTLDLL;
+
+function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; external RTLDLL;
+function xreallocmem(var p: pointer; size: QWord): pointer;
+
 function xclone(const p: pointer): pointer; stdcall; external RTLDLL;
 function xmemsize(const p: pointer): ptruint; stdcall; external RTLDLL;
 function xmemrealsize(const p: pointer): ptruint; stdcall; external RTLDLL;
@@ -251,7 +257,8 @@ begin
   xfillmem(result, size, 0);
 end;
 
-function xreallocmem(var p: pointer; size: ptruint): pointer; stdcall; export;
+{$ifdef DLLEXPORT}
+function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; export;
 var
   h: pxmemheader;
   n: ptruint;
@@ -312,6 +319,20 @@ begin
     p := result;
   end;
 end;
+function xreallocmem(var p: pointer; size: QWord): pointer;
+begin
+  xreallocmem_(P, size);
+  Exit(P);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; external RTLDLL;
+function xreallocmem (var p: pointer; size: QWord): pointer;
+begin
+  xreallocmem_(P, size);
+  Exit(P);
+end;
+{$endif DLLIMPORT}
 
 function xclone(const p: pointer): pointer; stdcall; export;
 var

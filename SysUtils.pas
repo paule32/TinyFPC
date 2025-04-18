@@ -25,37 +25,122 @@ interface
 uses global;
 
 {$ifdef DLLEXPORT}
-function  IntToStr(Value:  Int64): PChar; stdcall; export;
+function  IntToStr(Value: Integer): PChar; stdcall; export; overload;
+function  IntToStr(Value:  Int64): PChar; stdcall; export; overload;
+
 function  UIntToStr(Value: UInt64): AnsiString; stdcall; export;
 function  StrAlloc(Size: Cardinal): PChar; stdcall; export;
 procedure StrDispose(P: PChar); stdcall; export;
-function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; export;
-function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; export;
 
-function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; export;
-function IntToStrPC64(Value: Int64): PChar; stdcall; export;
+function  StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall; export;
+function  StrCat (var Dest: PChar; Source: PChar): PChar; stdcall; export;
 
 function UIntToStrA(Value: UInt64): AnsiString; stdcall; export;
 
-function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; export;
-function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; export;
+function StrCopy_(var Dest: PChar; Source: PChar): PChar; stdcall; export;
+function StrCat_ (var Dest: PChar; Source: PChar): PChar; stdcall; export;
+
+{ Ansi-Version }
+function StrPas(P: PAnsiChar): AnsiString; overload;
+
+{ Unicode-Version }
+//function StrPas(P: PChar): UnicodeString; overload;
+
+function _itoa  (Value: Integer; Buffer: PAnsiChar; Radix: Integer): PAnsiChar; cdecl; external 'msvcrt.dll' name '_itoa';
+function _i64toa(Value:   Int64; Buffer: PAnsiChar; Radix: Integer): PAnsiChar; cdecl; external 'msvcrt.dll' name '_i64toa';
+function _i64tow(Value:   Int64; Buffer: PWideChar; Radix: Integer): PWideChar; cdecl; external 'msvcrt.dll' name '_i64tow';
+
+//Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
+
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
-function  IntToStr(Value:  Int64): PChar; stdcall; external RTLDLL;
+function  IntToStr(Value: Integer): PChar; stdcall; overload; external RTLDLL;
+function  IntToStr(Value:  Int64): PChar; stdcall; overload; external RTLDLL;
+
 function  UIntToStr(Value: UInt64): AnsiString; stdcall; external RTLDLL;
 function  StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
 procedure StrDispose(P: PChar); stdcall; external RTLDLL;
-function  StrCopy(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-function  StrCat(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-
-function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; external RTLDLL;
-function IntToStrPC64(Value: Int64): PChar; stdcall; external RTLDLL;
+function  StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function  StrCat (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 
 function UIntToStrA(Value: UInt64): AnsiString; stdcall; external RTLDLL;
-function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCopy_(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCat_ (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+
+Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
 {$endif DLLIMPORT}
 implementation
+
+procedure fpc_pchar_ansistr_intern_charmove(const src: pchar; const srcindex: sizeint; var dst: rawbytestring; const dstindex, len: sizeint); {$ifdef FPC_HAS_CPSTRING}rtlproc;{$endif} {$ifdef SYSTEMINLINE}inline;{$endif}
+begin
+  move(src[srcindex],pbyte(pointer(dst))[dstindex],len);
+end;
+
+procedure fpc_pchar_pchar_intern_charmove(const src: pchar; const srcindex: sizeint; const dst: pchar; const dstindex, len: sizeint); {$ifdef FPC_HAS_CPSTRING}rtlproc;{$endif} {$ifdef SYSTEMINLINE}inline;{$endif}
+begin
+  move(src[srcindex],dst[dstindex],len);
+end;
+
+Procedure SetString(out S : AnsiString; Buf : PAnsiChar; Len : SizeInt);
+begin
+  SetLength(S,Len);
+  If (Buf<>Nil) then
+    fpc_pchar_ansistr_intern_charmove(Buf,0,S,0,Len);
+end;
+
+function StrPas(P: PAnsiChar): AnsiString;
+var
+  Start: PAnsiChar;
+  Len: Integer;
+begin
+  if P = nil then
+    Exit('');
+  Start := P;
+  { Länge bis zum terminierenden #0 ermitteln }
+  while P^ <> #0 do
+    Inc(P);
+  Len := P - Start;
+  { AnsiString mit genau Len Zeichen anlegen }
+  SetString(Result, Start, Len);
+end;
+
+{ 1) Null‑terminiertes statisches oder dynamisches Array }
+function CharArrToAnsiStr(const A: array of AnsiChar): AnsiString; overload;
+var
+  len : Integer;
+begin
+  result := '';
+  if Length(A) = 0 then
+  begin
+    MessageBoxA(0,'Error: Char Array empty.', 'Error', 0);
+    exit;
+  end;
+  len := 0;
+  repeat
+    result := result + A[len];
+    inc(len);
+  until len = Length(A);
+  
+  //Result := StrPas(PAnsiChar(@A[0]));
+end;
+
+{ 2) Statisches oder dynamisches Array mit bekannter Länge }
+function CharArrToAnsiStr(const A: array of AnsiChar; BufLen: Integer): AnsiString; overload;
+begin
+  if (BufLen <= 0) or (Length(A) = 0) then
+    Exit('');
+  if BufLen > Length(A) then
+    BufLen := Length(A);
+  SetString(Result, PAnsiChar(@A[0]), BufLen);
+end;
+
+{ 3) PAnsiChar + Länge }
+function CharArrToAnsiStr(P: PAnsiChar; BufLen: Integer): AnsiString; overload;
+begin
+  if (P = nil) or (BufLen <= 0) then
+    Exit('');
+  SetString(Result, P, BufLen);
+end;
 
 function StrAlloc(Size: Cardinal): PChar; stdcall; export;
 begin
@@ -70,146 +155,116 @@ begin
 end;
 
 {$ifdef DLLEXPORT}
-function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; export;
+function StrCopy_(var Dest: PChar; Source: PChar): PChar; stdcall; export;
+var
+  I : Integer;
+  L : Integer;
 begin
-  Result := Dest;
-  while Source^ <> #0 do
-  begin
-    Dest^ := Source^;
-    Inc(Dest);
-    Inc(Source);
-  end;
-  Dest^ := #0;  // Nullterminator setzen
+  L      := StrLen(Source);
+  Dest   := StrAlloc(L + 1);
+  
+  for I := 0 to L - 1 do
+  Dest  [i] := Source[i];
+  Dest  [L] := #0;
+  
+  Exit(Dest);
 end;
-function StrCopy(Dest: PChar; Source: PChar): PChar; stdcall;
+function StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall;
 begin
+  if Dest = nil then
+  Dest := StrAlloc(StrLen(Source) + 1);
   StrCopy_(Dest, Source);
+  Exit(Dest);
 end;
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
 function StrCopy_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 function StrCopy(Dest: PChar; Source: PChar): PChar; stdcall;
 begin
-  StrCopy_(Dest, Source);
+MessageBoxA(0, Source, '4444', 0);
+  result := StrCopy_(Dest, Source);
 end;
 {$endif DLLIMPORT}
 
 {$ifdef DLLEXPORT}
-function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; export;
+function StrCat_(var Dest: PChar; Source: PChar): PChar; stdcall; export;
 var
-  D: PChar;
+  D       : PChar;
+  L, I, J : Integer;
 begin
-  D := Dest;
-  // Gehe ans Ende von Dest
-  while D^ <> #0 do
-    Inc(D);
-
-  // Hänge Source an
-  while Source^ <> #0 do
-  begin
-    D^ := Source^;
-    Inc(D);
-    Inc(Source);
-  end;
-
-  D^ := #0; // Nullterminator setzen
-  Result := Dest;
+  L := StrLen(Dest) + StrLen(Source) + 1;
+  D := StrAlloc(L);
+  
+  for i := 0 to StrLen(Dest) - 1 do
+  D[i] := Dest[i];
+  
+  for J := 0 to StrLen(Source) - 1 do
+  D[i + j + 1] := Source[J];
+  D[i + J + 2] := #0;
+  
+  Dest := D;
+  Exit(D);
 end;
-function StrCat(Dest: PChar; Source: PChar): PChar; stdcall;
+function StrCat(var Dest: PChar; Source: PChar): PChar; stdcall;
 begin
-  result := StrCat_(Dest, Source);
+  StrCat_(Dest, Source);
+  Exit(Dest);
 end;
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
-function StrCat_(Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-function StrCat(Dest: PChar; Source: PChar): PChar; stdcall;
+function StrCat_(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+function StrCat (var Dest: PChar; Source: PChar): PChar; stdcall;
 begin
-  result := StrCat_(Dest, Source);
+  if Dest = nil then
+  begin
+    MessageBoxA(0,'Error: StrCat Dest not initialized.','Error',0);
+    Exit(mil);
+  end;
+  Exit(StrCat_(Dest, Source));
 end;
 {$endif DLLIMPORT}
 
-
 {$ifdef DLLEXPORT}
-function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; export;
+function IntToStrCRT32(Value: Integer): PChar; stdcall; export;
 var
-  i: Integer;
-  isNegative: Boolean;
-  absValue: UInt64;
+  Buffer : array[0..16] of Char;
+  I      : Integer;
 begin
-  if Buffer = nil then
-    Exit(nil);
-
-  i := BufLen - 1;
-  Buffer[i] := #0;
-  Dec(i);
-
-  if Value < 0 then
-  begin
-    isNegative := True;
-    absValue := UInt64(-Value);
-  end
-  else
-  begin
-    isNegative := False;
-    absValue := UInt64(Value);
-  end;
-
+  result := StrAlloc(16);
+  _itoa(Value, Buffer, 10);
+  i := 0;
   repeat
-    if i < 0 then Exit(nil); // Buffer zu klein
-    Buffer[i] := Char(Ord('0') + (absValue mod 10));
-    absValue := absValue div 10;
-    Dec(i);
-  until absValue = 0;
-
-  if isNegative then
-  begin
-    if i < 0 then Exit(nil);
-    Buffer[i] := '-';
-    Dec(i);
-  end;
-
-  Result := @Buffer[i + 1];
+    result[i] := Buffer[i];
+    inc(i);
+  until i = Length(Buffer);
+  result[16] := #0;
 end;
-function IntToStrPChar(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; overload; stdcall;
-begin
-  result := IntToStrPC(Value, Buffer, BufLen);
-end;
-{$endif DLLEXPORT}
-{$ifdef DLLIMPORT}
-function IntToStrPC(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; stdcall; external RTLDLL;
-function IntToStrPChar(Value: Int64; Buffer: PChar; BufLen: Integer): PChar; overload; stdcall;
-begin
-  result := IntToStrPC(Value, Buffer, BufLen);
-end;
-{$endif DLLIMPORT}
-
-{$ifdef DLLEXPORT}
-function IntToStrPC64(Value: Int64): PChar; stdcall; export;
+function IntToStrCRT64(Value: Int64): PChar; stdcall; export;
 var
-  Buffer: array[0..63] of Char;
-  P: PChar;
+  Buffer : array[0..32] of AnsiChar;
+  I      : Integer;
 begin
-  P := IntToStrPChar(Value, Buffer, Length(Buffer));
-  if P = nil then
-  begin
-    MessageBoxA(0,'IntToStr(): buffer = nil', 'Error', 0);
-    result := nil;
-    Exit;
-  end;
-  result := P;
+  result := StrAlloc(32);
+  _i64toa(Value, Buffer, 10);
+  i := 0;
+  repeat
+    result[i] := Buffer[i];
+    inc(i);
+  until i = Length(Buffer);
+  result[32] := #0;
 end;
-function IntToStr(Value: Int64): PChar; stdcall;
-begin
-  result := IntToStrPC64(Value);
-end;
+
+function IntToStr(Value: Integer): PChar; stdcall; overload; begin result := IntToStrCRT32(Value); end;
+function IntToStr(Value:   Int64): PChar; stdcall; overload; begin result := IntToStrCRT64(Value); end;
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
-function IntToStrPC64(Value: Int64): PChar; stdcall; external RTLDLL;
-function IntToStr(Value: Int64): PChar; overload; stdcall;
-begin
-  result := IntToStrP64(Value);
-end;
+function IntToStrCRT32(Value: Integer): PChar; stdcall; external RTLDLL;
+function IntToStrCRT64(Value:   Int64): PChar; stdcall; external RTLDLL;
+
+function IntToStr(Value: Integer): PChar; overload; stdcall; begin result := IntToStrCRT32(Value); end;
+function IntToStr(Value:   Int64): PChar; overload; stdcall; begin result := IntToStrCRT64(Value); end;
 {$endif DLLIMPORT}
+
 
 {$ifdef DLLEXPORT}
 function UIntToStrA(Value: UInt64): AnsiString; stdcall; export;
@@ -243,13 +298,15 @@ end;
 {$endif DLLIMPORT}
 
 
+{$ifdef DLLEXPORT}
 exports
-  IntToStr   name 'IntToStr',
   UIntToStr  name 'UIntToStr',
   StrAlloc   name 'StrAlloc',
-  StrCat     name 'StrCat',
   StrCopy    name 'StrCopy',
+  StrCat     name 'StrCat',
+  StrCat_    name 'StrCat_',
   StrDispose name 'StrDispose'
   ;
+{$endif DLLEXPORT}
 
 end.

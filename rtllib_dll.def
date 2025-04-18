@@ -20,11 +20,14 @@ EXPORTS
     fpcshortstrcopy
     fpcansistrsetlength
     fpcansistrcopy
-    fpcpwidechartowidestr
+    fpcansistrcompareequal
+    
     fpcpchartoansistr
     
     fpcpwidechartoansistr
+    fpcpwidechartowidestr
     fpcwidestrassign
+    fpcwidestrincrref
     
     newansistring
     newwidestring
@@ -37,11 +40,10 @@ EXPORTS
     ; String routines
     ; -------------------------------
     StrAlloc
-    ;StrCat
     StrCopy
     StrDispose
     
-    StrCat_
+    StrCat
     StrCopy_
     
     ; -------------------------------
