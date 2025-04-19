@@ -66,6 +66,11 @@ function CompareChar(const buf1; const buf2; len: ptruint): ptrint;
 function fpc_getmem(size: ptruint): pointer; compilerproc;
 procedure fpc_freemem(p: pointer); compilerproc;
 
+function xgetmem(size: ptruint): pointer; stdcall; external RTLDLL;
+function xallocmem(size: ptruint): pointer; stdcall; external RTLDLL;
+function xreallocmem(var p: pointer; size: QWord): pointer; external RTLDLL;
+function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
+
 {$endif}
 
 {$ifdef codei}

@@ -152,7 +152,7 @@ type
     { interface functions }
     function GetInterface(const iid: TGUID; out obj): boolean;
     function GetInterfaceWeak(const iid: TGUID; out obj): boolean; // equal to GetInterface but the interface returned is not referenced
-    class function GetInterfaceEntry(const iid: TGUID): PInterfaceEntry;
+    function GetInterfaceEntry(const iid: TGUID): PInterfaceEntry;
   end;
 
 { ****************************************
@@ -304,7 +304,8 @@ begin
   if self <> nil then self.Destroy;
 end;
 
-procedure InitInterfacePointers(objclass: tclass;instance : pointer);
+{$ifdef DLLEXPORT}
+procedure InitInterfacePointers_(objclass: tclass;instance : pointer); stdcall; export;
 var
   ovmt: PVmt;
   i: longint;
@@ -332,6 +333,18 @@ begin
       ovmt:=ovmt^.vParent;
     end;
 end;
+procedure InitInterfacePointers(objclass: tclass;instance : pointer); stdcall;
+begin
+  InitInterfacePointers(objclass, instance);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure InitInterfacePointers_(objclass: tclass;instance : pointer); stdcall; external RTLDLL;
+procedure InitInterfacePointers(objclass: tclass;instance : pointer); stdcall;
+begin
+  InitInterfacePointers(objclass, instance);
+end;
+{$endif DLLIMPORT}
 
 class function TObject.InitInstance(Instance: Pointer): TObject;
 var
@@ -411,7 +424,8 @@ type
   TInterfaceGetter = procedure(out Obj) of object;
   TClassGetter = function: TObject of object;
 
-function GetInterfaceByEntry(Instance: pointer; IEntry: PInterfaceEntry; out obj): boolean;
+{$ifdef DLLEXPORT}
+function GetInterfaceByEntry_(Instance: pointer; IEntry: PInterfaceEntry; out obj): boolean; export;
 var
   Getter: TMethod;
 begin
@@ -445,19 +459,32 @@ begin
     end;
   result := assigned(pointer(obj));
 end;
+function GetInterfaceByEntry(Instance: pointer; IEntry: PInterfaceEntry; out obj): boolean;
+begin
+  Exit(GetInterfaceByEntry_(Instance, IEntry, obj));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function GetInterfaceByEntry_(Instance: pointer; IEntry: PInterfaceEntry; out obj): boolean; external RTLDLL;
+function GetInterfaceByEntry(Instance: pointer; IEntry: PInterfaceEntry; out obj): boolean;
+begin
+  Exit(GetInterfaceByEntry_(Instance, IEntry, obj));
+end;
+{$endif DLLIMPORT}
 
-function TObject.GetInterface(const iid: TGUID; out obj): boolean;
+{$ifdef DLLEXPORT}
+function GetInterface_(objclass: TObject; const iid: TGUID; out obj): boolean; export;
 var
   IEntry: PInterfaceEntry;
   Instance: TObject;
 begin
   if IsGUIDEqual(IObjectInstance, iid) then begin
-    TObject(Obj) := Self;
+    TObject(Obj) := objclass;
     Result := true;
     Exit;
   end;
 
-  Instance := self;
+  Instance := objclass;
   repeat
     IEntry := Instance.GetInterfaceEntry(iid);
     result := GetInterfaceByEntry(Instance, IEntry, obj);
@@ -473,19 +500,32 @@ begin
   { Getter function will normally AddRef, so adding another reference here will cause memleak. }
   if result and (IEntry^.IType in [etStandard, etFieldValue]) then IInterface(obj)._AddRef;
 end;
+function TObject.GetInterface(const iid: TGUID; out obj): boolean;
+begin
+  Exit(GetInterface_(self, iid, obj));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function GetInterface_(objclass: TObject; const iid: TGUID; out obj): boolean; external RTLDLL;
+function TObject.GetInterface(const iid: TGUID; out obj): boolean;
+begin
+  Exit(GetInterface_(self, iid, obj));
+end;
+{$endif DLLIMPORT}
 
-function TObject.GetInterfaceWeak(const iid: TGUID; out obj): boolean;
+{$ifdef DLLEXPORT}
+function GetInterfaceWeak_(objclass: TObject; const iid: TGUID; out obj): boolean; export;
 var
   IEntry: PInterfaceEntry;
   Instance: TObject;
 begin
   if IsGUIDEqual(IObjectInstance, iid) then begin
-    TObject(Obj) := Self;
+    TObject(Obj) := objclass;
     Result := true;
     Exit;
   end;
 
-  Instance := self;
+  Instance := objclass;
   repeat
     IEntry := Instance.GetInterfaceEntry(iid);
     result := GetInterfaceByEntry(Instance, IEntry, obj);
@@ -501,14 +541,27 @@ begin
   { Getter function will normally AddRef, so we have to release it, else the ref is not weak. }
   if result and not (IEntry^.IType in [etStandard, etFieldValue]) then IInterface(obj)._Release;
 end;
+function TObject.GetInterfaceWeak(const iid: TGUID; out obj): boolean;
+begin
+  Exit(GetInterfaceWeak_(self, iid, obj));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function GetInterfaceWeak_(objclass: TObject; const iid: TGUID; out obj): boolean; external RTLDLL;
+function TObject.GetInterfaceWeak(const iid: TGUID; out obj): boolean;
+begin
+  Exit(GetInterfaceWeak_(self, iid, obj));
+end;
+{$endif DLLIMPORT}
 
-class function TObject.GetInterfaceEntry(const iid: TGUID): PInterfaceEntry;
+{$ifdef DLLEXPORT}
+function GetInterfaceEntry_(objclass: TObject; const iid: TGUID): PInterfaceEntry; export;
 var
   i: longint;
   intftable: PInterfaceTable;
   ovmt: PVmt;
 begin
-  ovmt := PVmt(Self);
+  ovmt := PVmt(objclass);
   while Assigned(ovmt) and Assigned(ovmt^.vIntftable) do begin
     intftable := ovmt^.vIntfTable;
     for i := 0 to intftable^.EntryCount-1 do begin
@@ -519,6 +572,19 @@ begin
   end;
   result := nil;
 end;
+function TObject.GetInterfaceEntry(const iid: TGUID): PInterfaceEntry;
+begin
+  Exit(GetInterfaceEntry_(self, iid));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function GetInterfaceEntry_(objclass: TObject; const iid: TGUID): PInterfaceEntry; external RTLDLL;
+function TObject.GetInterfaceEntry(const iid: TGUID): PInterfaceEntry;
+begin
+  Exit(GetInterfaceEntry_(self, iid));
+end;
+{$endif DLLIMPORT}
+
 
 { ****************************************
   TInterfacedObject

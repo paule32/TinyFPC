@@ -40,7 +40,6 @@ interface
 // all functions are self-contained since no external units are used
 // this unit may be adapted to environments without Windows or other standard units
 
-{$ifdef DLLEXPORT}
 const
   // config
   XMMCHUNKSIZE     = 512; // size of each memory chunk in bytes
@@ -65,6 +64,7 @@ procedure RtlMoveMemory(dst, src: pointer; len: sizeuint); stdcall; external KER
 procedure RtlZeroMemory(dst: pointer; len: sizeuint); stdcall; external KERNEL32;
 function RtlCompareMemory(src1, src2: pointer; len: sizeuint): sizeuint; stdcall; external NTDLL;
 
+{$ifdef DLLEXPORT}
 // allocates memory of given size
 function xgetmem(size: ptruint): pointer; stdcall; export;
 // allocates and zeroes memory of given size
@@ -107,35 +107,34 @@ procedure xmminit; stdcall; export;
 {$endif DLLEXPORT}
 
 {$ifdef DLLIMPORT}
-function xgetmem(size: ptruint): pointer; stdcall; external RTLDLL;
-function xallocmem(size: ptruint): pointer; stdcall; external RTLDLL;
+//function xgetmem(size: ptruint): pointer; stdcall; external RTLDLL;
+//function xallocmem(size: ptruint): pointer; stdcall; external RTLDLL;
 
-function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; external RTLDLL;
-function xreallocmem(var p: pointer; size: QWord): pointer;
+//function xreallocmem_(var p: pointer; size: QWord): pointer; stdcall; external RTLDLL;
+//function xreallocmem(var p: pointer; size: QWord): pointer;
 
-function xclone(const p: pointer): pointer; stdcall; external RTLDLL;
+//function xclone(const p: pointer): pointer; stdcall; external RTLDLL;
 function xmemsize(const p: pointer): ptruint; stdcall; external RTLDLL;
-function xmemrealsize(const p: pointer): ptruint; stdcall; external RTLDLL;
-function xmemavailsize(const p: pointer): ptruint; stdcall; external RTLDLL;
-function xfreemem(p: pointer): ptruint; stdcall; external RTLDLL;
-function xzeromem(p: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
+//function xmemrealsize(const p: pointer): ptruint; stdcall; external RTLDLL;
+//function xmemavailsize(const p: pointer): ptruint; stdcall; external RTLDLL;
+//function xfreemem(p: pointer): ptruint; stdcall; external RTLDLL;
+//function xzeromem(p: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
 function xmovemem(const src: pointer; dst: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
 
 function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; overload;
 function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; overload;
 
-function xfillmem_a(p: pointer; len: ptruint; v: byte): ptruint; stdcall; external RTLDLL;
-function xfillmem_b(p: pointer; len: ptruint; v: char): ptruint; stdcall; external RTLDLL;
+//function xfillmem_a(p: pointer; len: ptruint; v: byte): ptruint; stdcall; external RTLDLL;
+//function xfillmem_b(p: pointer; len: ptruint; v: char): ptruint; stdcall; external RTLDLL;
 
-function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
-function xmemcompare(const p1, p2: pointer; len: ptruint): boolean; stdcall; external RTLDLL;
-function xgetfreechunks: integer; stdcall; external RTLDLL;
-procedure xmminit; stdcall; external RTLDLL;
+//function xmemdiffat(const p1, p2: pointer; len: ptruint): ptruint; stdcall; external RTLDLL;
+//function xmemcompare(const p1, p2: pointer; len: ptruint): boolean; stdcall; external RTLDLL;
+//function xgetfreechunks: integer; stdcall; external RTLDLL;
+procedure xmminit_; stdcall; external RTLDLL;
 {$endif DLLIMPORT}
 
 implementation
 
-{$ifdef DLLEXPORT}
 type
   pxmemheader = ^txmemheader;
   pxmemchunk = ^txmemchunk;
@@ -183,8 +182,10 @@ begin
   _atomic32(xmemchunks_critical_section, 0);
 end;
 
-// attempts to allocate a memory chunk of the specified size from the chunk pool; returns a pointer to the chunk or nil if no chunk is available
-function _xgetmemchunk(size: dword): pointer; inline;
+// attempts to allocate a memory chunk of the specified size from the chunk pool;
+// returns a pointer to the chunk or nil if no chunk is available
+{$ifdef DLLEXPORT}
+function _xgetmemchunk_(size: dword): pointer; stdcall; export;
 var
   i: integer;
 begin
@@ -211,8 +212,21 @@ begin
   // if no more chunks, return nil for fallback to standard GetMem
   _xmemchunksend;
 end;
+function _xgetmemchunk(size: dword): pointer; stdcall;
+begin
+  Exit(_xgetmemchunk_(size));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function _xgetmemchunk_(size: dword): pointer; stdcall; external RTLDLL;
+function _xgetmemchunk (size: dword): pointer; stdcall;
+begin
+  Exit(_xgetmemchunk_(size));
+end;
+{$endif DLLIMPORT}
 
-function xgetmem(size: ptruint): pointer; stdcall; export;
+{$ifdef DLLEXPORT}
+function xgetmem_a(size: ptruint): pointer; stdcall; export;
 begin
   {$ifdef XMMDEBUG}
   writeln('call to xgetmem(', size, ')');
@@ -245,6 +259,18 @@ begin
   // move result pointer past the header
   result := result + sizeof(txmemheader);
 end;
+function xgetmem(size: ptruint): pointer; stdcall; export;
+begin
+  Exit(xgetmem_a(size));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function xgetmem_a(size: ptruint): pointer; stdcall; external RTLDLL;
+function xgetmem(size: ptruint): pointer; stdcall;
+begin
+  Exit(xgetmem_a(size));
+end;
+{$endif DLLIMPORT}
 
 function xallocmem(size: ptruint): pointer; stdcall; export;
 begin   
@@ -334,7 +360,8 @@ begin
 end;
 {$endif DLLIMPORT}
 
-function xclone(const p: pointer): pointer; stdcall; export;
+{$ifdef DLLEXPORT}
+function xclone_(const p: pointer): pointer; stdcall; export;
 var
   u: ptruint;
 begin
@@ -345,7 +372,20 @@ begin
   result := xgetmem(u);
   xmovemem(p, result, u);
 end;
+function xclone(const p: pointer): pointer; stdcall;
+begin
+  Exit(xclone(p));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function xclone_(const p: pointer): pointer; stdcall; external RTLDLL;
+function xclone (const p: pointer): pointer; stdcall;
+begin
+  Exit(xclone(p));
+end;
+{$endif DLLIMPORT}
 
+{$ifdef DLLEXPORT}
 function xmemsize(const p: pointer): ptruint; stdcall; export;
 begin
   {$ifdef XMMDEBUG}
@@ -353,6 +393,7 @@ begin
   {$endif}
   result := pxmemheader(p-sizeof(txmemheader))^.size;
 end;
+{$endif DLLEXPORT}
 
 function xmemrealsize(const p: pointer): ptruint; stdcall; export;
 begin
@@ -370,7 +411,8 @@ begin
   result := pxmemheader(p-sizeof(txmemheader))^.realsize;
 end;
 
-function xfreemem(p: pointer): ptruint; stdcall; export;
+{$ifdef DLLEXPORT}
+function xfreemem_(p: pointer): ptruint; stdcall; export;
 var
   h: pxmemheader;
 begin
@@ -398,6 +440,18 @@ begin
 
   _xmemchunksend;
 end;
+function xfreemem(p: pointer): ptruint; stdcall;
+begin
+  Exit(xfreemem_(p));
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function xfreemem_(p: pointer): ptruint; stdcall; external RTLDLL;
+function xfreemem (p: pointer): ptruint; stdcall;
+begin
+  Exit(xfreemem_(p));
+end;
+{$endif DLLIMPORT}
 
 function xzeromem(p: pointer; len: ptruint): ptruint; stdcall; export;
 begin       
@@ -407,6 +461,7 @@ begin
   result := xfillmem(p, len, 0);
 end;
 
+{$ifdef DLLEXPORT}
 function xmovemem(const src: pointer; dst: pointer; len: ptruint): ptruint; stdcall; export;
 begin
   {$ifdef XMMDEBUG}
@@ -415,6 +470,7 @@ begin
   RtlMoveMemory(dst, src, len);
   result := len;
 end;
+{$endif DLLEXPORT}
 
 function xfillmem_a(p: pointer; len: ptruint; v: byte): ptruint; stdcall; [public, alias: 'xfillmem_a']; export;
 begin   
@@ -450,7 +506,8 @@ begin
   result := RtlCompareMemory(p1, p2, len) = len;
 end;
 
-function xgetfreechunks: integer; stdcall; export;
+{$ifdef DLLEXPORT}
+function xgetfreechunks_: integer; stdcall; export;
 var
   i: integer;
 begin 
@@ -462,8 +519,21 @@ begin
   for i := 0 to high(xmemchunks) do if xmemchunks[i].h.size = 0 then result := result + 1;
   _xmemchunksend;
 end;
+function xgetfreechunks: integer; stdcall;
+begin
+  Exit(xgetfreechunks_);
+end;
+{$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+function xgetfreechunks_: integer; stdcall; external RTLDLL;
+function xgetfreechunks: integer; stdcall;
+begin
+  Exit(xgetfreechunks_);
+end;
+{$endif DLLIMPORT}
 
-procedure xmminit; stdcall;
+{$ifdef DLLEXPORT}
+procedure xmminit_; stdcall; export;
 var
   i: integer;
 begin
@@ -495,8 +565,17 @@ begin
   // exit critical section
   _xmemchunksend;
 end;
-
+procedure xmminit; stdcall;
+begin
+  xmminit_;
+end;
 {$endif DLLEXPORT}
+{$ifdef DLLIMPORT}
+procedure xmminit ; stdcall;
+begin
+  xmminit_;
+end;
+{$endif DLLIMPORT}
 
 function xfillmem(p: pointer; len: ptruint; v: byte): ptruint; stdcall; begin result := xfillmem_a(p, len, v); end;
 function xfillmem(p: pointer; len: ptruint; v: char): ptruint; stdcall; begin result := xfillmem_b(p, len, v); end;
@@ -518,7 +597,7 @@ exports
   xmemdiffat        name 'xmemdiffat',
   xmemcompare       name 'xmemcompare',
   xgetfreechunks    name 'xgetfreechunks',
-  xmminit           name 'xmminit';
+  xmminit_          name 'xmminit_';
 {$endif DLLEXPORT}
 initialization
   // initialization: prepares memory chunk pool for allocations (zeros all)

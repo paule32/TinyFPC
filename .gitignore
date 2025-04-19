@@ -51,3 +51,4 @@ doc/MFC_TCP_Client_IP.zip
 *.bak
 LICENSE.bak
 /mfcFPC/xml
+t.bat

@@ -34,6 +34,8 @@ function newwidestring(len: SizeInt): pointer; stdcall; export;
 
 {$endif DLLEXPORT}
 
+function xfreemem(p: pointer): ptruint; stdcall; external RTLDLL;
+
 // short
 procedure fpc_shortstr_setlength(var s: ShortString; len: SizeInt); compilerproc;
 function fpc_shortstr_to_ansistr(const s2: ShortString; cp: TSystemCodePage): RawByteString; stdcall; compilerproc;
