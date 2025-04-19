@@ -29,7 +29,7 @@ function  IntToStr(Value: Integer): PChar; stdcall; export; overload;
 function  IntToStr(Value:  Int64): PChar; stdcall; export; overload;
 
 function  UIntToStr(Value: UInt64): AnsiString; stdcall; export;
-function  StrAlloc(Size: Cardinal): PChar; stdcall; export;
+//function  StrAlloc(Size: Cardinal): PChar; stdcall; export;
 procedure StrDispose(P: PChar); stdcall; export;
 
 function  StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall; export;
@@ -54,20 +54,20 @@ function _i64tow(Value:   Int64; Buffer: PWideChar; Radix: Integer): PWideChar; 
 
 {$endif DLLEXPORT}
 {$ifdef DLLIMPORT}
-function  IntToStr(Value: Integer): PChar; stdcall; overload; external RTLDLL;
-function  IntToStr(Value:  Int64): PChar; stdcall; overload; external RTLDLL;
+//function  IntToStr(Value: Integer): PChar; stdcall; overload; external RTLDLL;
+//function  IntToStr(Value:  Int64): PChar; stdcall; overload; external RTLDLL;
 
-function  UIntToStr(Value: UInt64): AnsiString; stdcall; external RTLDLL;
-function  StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
-procedure StrDispose(P: PChar); stdcall; external RTLDLL;
-function  StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-function  StrCat (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+//function  UIntToStr(Value: UInt64): AnsiString; stdcall; external RTLDLL;
+//function  StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
+//procedure StrDispose(P: PChar); stdcall; external RTLDLL;
+//function  StrCopy(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+//function  StrCat (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 
-function UIntToStrA(Value: UInt64): AnsiString; stdcall; external RTLDLL;
-function StrCopy_(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
-function StrCat_ (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+//function UIntToStrA(Value: UInt64): AnsiString; stdcall; external RTLDLL;
+//function StrCopy_(var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
+//function StrCat_ (var Dest: PChar; Source: PChar): PChar; stdcall; external RTLDLL;
 
-Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
+//Function fpc_chararray_to_ansistr(const arr: array of char; zerobased: boolean = true): ansistring; compilerproc;
 {$endif DLLIMPORT}
 implementation
 
@@ -218,7 +218,7 @@ begin
   if Dest = nil then
   begin
     MessageBoxA(0,'Error: StrCat Dest not initialized.','Error',0);
-    Exit(mil);
+    Exit;
   end;
   Exit(StrCat_(Dest, Source));
 end;

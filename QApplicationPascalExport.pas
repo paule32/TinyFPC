@@ -27,6 +27,8 @@ uses Windows, SysUtils, QObjectPascalExport;
 function GetCommandLineA: LPSTR; stdcall; external kernel32;
 function CommandLineToArgvA(CmdLine: PAnsiChar; var argc: Integer): PPAnsiChar; stdcall; export;
 
+function StrAlloc(Size: Cardinal): PChar; stdcall; external RTLDLL;
+
 type
   (**
    * \class   QApplication

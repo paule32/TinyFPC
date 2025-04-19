@@ -23,7 +23,9 @@
 {$define DLLIMPORT}
 program test;
 
-uses RtlLibImport, QApplicationPascalImport;
+uses SysUtils, RtlLibImport, QApplicationPascalImport;
+
+function  IntToStr(Value:  Int64): PChar; stdcall; overload; external RTLDLL;
 
 var
   rtl: TRtl;
@@ -31,9 +33,13 @@ var
   app: QApplication;
 begin
   app := QApplication.Create;
-  s := StringReplace('hallo welt', 'hallo', 'dudu', [rfReplaceAll]);
-  MessageBoxA(0, LPCSTR(s), PChar('cxxxx'), 0);
-  
+  try
+    s := StringReplace('hallo welt', 'hallo', 'dudu', [rfReplaceAll]);
+    MessageBoxA(0, LPCSTR(s), PChar('cxxxx'), 0);
+    raise Exception.Create('teker');
+  except
+    MessageBoxA(0, 'Error', 'Errr', 0);
+  end;
   rtl := TRTL.Create;
   rtl.Free;
   app.Free;
